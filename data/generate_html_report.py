@@ -214,119 +214,154 @@ def build_html(listings, output_path):
     else:
         print("No Google Maps API key found. Skipping map and street view images.")
 
+    total = len(listings)
+    fiber_count = sum(1 for l in listings if l.get("internet", {}).get("classification") == "Excellent")
+
     html = f"""<!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="light">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Portland SE Apartment Search Report</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css">
 <style>
-  * {{ margin: 0; padding: 0; box-sizing: border-box; }}
-  body {{ font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; color: #333; background: #f8f9fa; line-height: 1.5; }}
-  .container {{ max-width: 900px; margin: 0 auto; padding: 20px; }}
+  /* ── Layout ── */
+  :root {{
+    --pico-font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+    --pico-border-radius: 0.5rem;
+  }}
+  body {{ background: var(--pico-background-color); }}
+  main.container {{ max-width: 960px; padding-top: 0; }}
 
-  /* Cover */
-  .cover {{ text-align: center; padding: 80px 20px; background: linear-gradient(135deg, #1d3557 0%, #264653 100%); color: white; border-radius: 12px; margin-bottom: 40px; }}
-  .cover h1 {{ font-size: 2.4em; margin-bottom: 4px; font-weight: 700; }}
-  .cover h2 {{ font-size: 1.4em; font-weight: 300; opacity: 0.9; margin-bottom: 20px; }}
+  /* ── Cover hero ── */
+  .cover {{
+    text-align: center;
+    padding: 4rem 2rem;
+    background: linear-gradient(135deg, #1d3557 0%, #264653 100%);
+    color: #fff;
+    border-radius: var(--pico-border-radius);
+    margin-bottom: 2.5rem;
+  }}
+  .cover h1 {{ color: #fff; font-size: 2.4em; margin-bottom: 0.15em; }}
+  .cover .lead {{ font-size: 1.25em; font-weight: 300; opacity: 0.92; margin-bottom: 1.2em; }}
   .cover .date {{ opacity: 0.7; font-size: 0.95em; }}
-  .cover .subtitle {{ opacity: 0.6; font-size: 0.85em; margin-top: 6px; }}
-  .cover hr {{ border: none; height: 2px; background: rgba(255,255,255,0.3); width: 200px; margin: 24px auto; }}
-  .cover .target {{ opacity: 0.8; font-size: 0.9em; max-width: 600px; margin: 0 auto; }}
+  .cover .subtitle {{ opacity: 0.6; font-size: 0.85em; margin-top: 0.35em; }}
+  .cover hr {{ border: none; height: 2px; background: rgba(255,255,255,0.25); width: 200px; margin: 1.5rem auto; }}
+  .cover .target {{ opacity: 0.82; font-size: 0.9em; max-width: 600px; margin: 0 auto; }}
+  .cover .stats {{ display: flex; justify-content: center; gap: 2rem; margin-top: 1.2rem; }}
+  .cover .stat {{ text-align: center; }}
+  .cover .stat-value {{ font-size: 2em; font-weight: 700; display: block; }}
+  .cover .stat-label {{ font-size: 0.8em; opacity: 0.7; text-transform: uppercase; letter-spacing: 0.05em; }}
 
-  /* Summary table */
-  .section-header {{ font-size: 1.5em; color: #1d3557; margin: 30px 0 16px; font-weight: 700; border-bottom: 3px solid #1d3557; padding-bottom: 8px; }}
-  table {{ width: 100%; border-collapse: collapse; margin-bottom: 24px; }}
-  th {{ background: #264653; color: white; padding: 10px 12px; font-size: 0.85em; text-align: center; }}
-  th:nth-child(2) {{ text-align: left; }}
-  td {{ padding: 10px 12px; font-size: 0.85em; text-align: center; border-bottom: 1px solid #dee2e6; }}
-  td:nth-child(2) {{ text-align: left; }}
-  tr:nth-child(even) {{ background: #f1faee; }}
-  tr:hover {{ background: #e8f4f8; }}
+  /* ── Summary table tweaks ── */
+  table {{ font-size: 0.9em; }}
+  td:first-child, th:first-child {{ text-align: center; width: 3.5em; }}
+  td:nth-child(4), td:nth-child(5), td:nth-child(7),
+  th:nth-child(4), th:nth-child(5), th:nth-child(7) {{ text-align: center; }}
+  .summary-link {{ color: var(--pico-primary); text-decoration: none; font-weight: 500; }}
+  .summary-link:hover {{ text-decoration: underline; }}
 
-  /* Listing cards */
-  .listing-card {{ background: white; border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); margin-bottom: 28px; overflow: hidden; }}
-  .listing-header {{ padding: 20px 24px 12px; }}
-  .listing-header h3 {{ color: #2d6a4f; font-size: 1.3em; margin-bottom: 4px; }}
-  .listing-header .meta {{ color: #6c757d; font-size: 0.9em; }}
+  /* ── Internet badges ── */
+  .internet-badge {{
+    display: inline-block; padding: 0.15em 0.65em; border-radius: 1em;
+    font-size: 0.8em; font-weight: 600; white-space: nowrap;
+  }}
+  .internet-badge.excellent {{ background: #d8f3dc; color: #1b4332; }}
+  .internet-badge.good {{ background: #fff3cd; color: #856404; }}
+  .internet-badge.adequate {{ background: #e2e3e5; color: #495057; }}
+  .internet-badge.poor {{ background: #f8d7da; color: #842029; }}
 
-  /* Photo gallery */
+  /* ── Listing cards (Pico <article>) ── */
+  article.listing-card {{ margin-bottom: 1.75rem; padding: 0; overflow: hidden; }}
+  article.listing-card > header {{
+    padding: 1.25rem 1.5rem 0.75rem;
+    background: transparent; border-bottom: none;
+  }}
+  article.listing-card > header h3 {{ color: #264653; margin-bottom: 0.2em; font-size: 1.25em; }}
+  article.listing-card > header .meta {{ color: var(--pico-muted-color); font-size: 0.9em; }}
+
+  /* ── Score bar ── */
+  .score-bar {{
+    height: 0.5rem; background: var(--pico-secondary-background);
+    border-radius: 0.25rem; margin: 0.5rem 0; overflow: hidden;
+  }}
+  .score-bar .fill {{ height: 100%; border-radius: 0.25rem; transition: width 0.5s ease; }}
+  .score-bar .fill.high {{ background: #2d6a4f; }}
+  .score-bar .fill.mid {{ background: #e9c46a; }}
+  .score-bar .fill.low {{ background: #e76f51; }}
+
+  /* ── Photo gallery ── */
   .gallery {{ display: grid; grid-template-columns: 1fr 1fr; gap: 4px; padding: 0 4px; }}
-  .gallery img {{ width: 100%; height: 220px; object-fit: cover; border-radius: 4px; cursor: pointer; transition: transform 0.2s; }}
-  .gallery img:hover {{ transform: scale(1.02); }}
+  .gallery img {{
+    width: 100%; height: 220px; object-fit: cover;
+    border-radius: var(--pico-border-radius);
+    cursor: pointer; transition: transform 0.2s, filter 0.2s;
+  }}
+  .gallery img:hover {{ transform: scale(1.015); filter: brightness(1.05); }}
   .gallery.single {{ grid-template-columns: 1fr; }}
   .gallery.single img {{ height: 360px; }}
 
-  /* Lightbox */
-  .lightbox {{ display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.9); z-index: 1000; justify-content: center; align-items: center; cursor: pointer; }}
+  /* ── Lightbox ── */
+  .lightbox {{
+    display: none; position: fixed; inset: 0;
+    background: rgba(0,0,0,0.92); z-index: 9999;
+    justify-content: center; align-items: center; cursor: pointer;
+  }}
   .lightbox.active {{ display: flex; }}
-  .lightbox img {{ max-width: 90%; max-height: 90%; object-fit: contain; border-radius: 8px; }}
+  .lightbox img {{ max-width: 90%; max-height: 90%; object-fit: contain; border-radius: 0.5rem; }}
 
-  /* Location row (map + street view) */
+  /* ── Location row (map + street view) ── */
   .location-row {{ display: grid; grid-template-columns: 1fr 1fr; gap: 4px; padding: 4px 4px 0; }}
-  .location-row .loc-card {{ position: relative; border-radius: 4px; overflow: hidden; }}
+  .location-row .loc-card {{ position: relative; border-radius: var(--pico-border-radius); overflow: hidden; }}
   .location-row img {{ width: 100%; height: 180px; object-fit: cover; display: block; }}
-  .location-row .loc-label {{ position: absolute; bottom: 0; left: 0; right: 0; background: linear-gradient(transparent, rgba(0,0,0,0.7)); color: white; padding: 8px 12px 6px; font-size: 0.75em; font-weight: 600; }}
+  .location-row .loc-label {{
+    position: absolute; bottom: 0; left: 0; right: 0;
+    background: linear-gradient(transparent, rgba(0,0,0,0.65));
+    color: #fff; padding: 0.5rem 0.75rem 0.35rem;
+    font-size: 0.75em; font-weight: 600;
+  }}
 
-  /* Details */
-  .listing-body {{ padding: 16px 24px 20px; }}
-  .listing-body p {{ margin-bottom: 8px; font-size: 0.9em; }}
-  .listing-body strong {{ color: #1d3557; }}
-  .internet-badge {{ display: inline-block; padding: 2px 10px; border-radius: 12px; font-size: 0.8em; font-weight: 600; }}
-  .internet-badge.excellent {{ background: #d8f3dc; color: #2d6a4f; }}
-  .internet-badge.good {{ background: #fff3cd; color: #856404; }}
-
-  /* Score breakdown */
-  .score-section {{ margin-top: 12px; }}
-  .score-table {{ width: auto; margin: 8px 0; }}
-  .score-table th {{ background: #2d6a4f; font-size: 0.8em; padding: 6px 12px; }}
-  .score-table td {{ font-size: 0.8em; padding: 6px 12px; }}
-  .score-table tr:last-child {{ background: #d8f3dc; font-weight: 700; }}
-  .score-total {{ font-size: 1.4em; font-weight: 700; color: #2d6a4f; float: right; margin-top: -36px; }}
-
-  /* Score bar */
-  .score-bar {{ height: 8px; background: #e9ecef; border-radius: 4px; margin: 4px 0; overflow: hidden; }}
-  .score-bar .fill {{ height: 100%; border-radius: 4px; transition: width 0.5s; }}
-  .score-bar .fill.high {{ background: #2d6a4f; }}
-  .score-bar .fill.mid {{ background: #f4a261; }}
-  .score-bar .fill.low {{ background: #e76f51; }}
-
-  .listing-link {{ display: inline-block; margin-top: 8px; color: #1d3557; text-decoration: none; font-size: 0.85em; font-weight: 600; }}
-  .listing-link:hover {{ text-decoration: underline; }}
-
-  /* Distance badges */
-  .distances {{ display: flex; gap: 12px; margin: 8px 0; flex-wrap: wrap; }}
-  .distance-badge {{ background: #e8f4f8; border: 1px solid #a8dadc; border-radius: 16px; padding: 4px 12px; font-size: 0.8em; color: #1d3557; }}
+  /* ── Distance badges ── */
+  .distances {{ display: flex; gap: 0.75rem; padding: 0.5rem 0.25rem 0; flex-wrap: wrap; }}
+  .distance-badge {{
+    background: var(--pico-secondary-background);
+    border: 1px solid var(--pico-muted-border-color);
+    border-radius: 1rem; padding: 0.25rem 0.75rem;
+    font-size: 0.8em; color: var(--pico-color);
+  }}
   .distance-badge .name {{ font-weight: 600; }}
 
-  /* Summary links */
-  .summary-link {{ color: #1d3557; text-decoration: none; }}
-  .summary-link:hover {{ text-decoration: underline; color: #2d6a4f; }}
-
-  /* Methodology */
-  .methodology {{ background: white; border-radius: 10px; box-shadow: 0 2px 8px rgba(0,0,0,0.08); padding: 24px; margin-top: 20px; }}
-  .methodology h4 {{ color: #1d3557; margin: 16px 0 8px; }}
-  .methodology p {{ font-size: 0.9em; margin-bottom: 8px; }}
-  .methodology table {{ margin: 12px 0; }}
-
-  .footer {{ text-align: center; color: #6c757d; font-size: 0.8em; padding: 30px 0; }}
+  /* ── Listing body ── */
+  .listing-body {{ padding: 1rem 1.5rem 1.25rem; }}
+  .listing-body p {{ margin-bottom: 0.5rem; font-size: 0.9em; }}
+  .listing-link {{
+    display: inline-block; margin-top: 0.5rem;
+    font-size: 0.85em; font-weight: 600;
+  }}
 </style>
 </head>
 <body>
-<div class="container">
+<main class="container">
 
   <div class="cover">
     <h1>Portland SE Apartment Search</h1>
-    <h2>Live/Work Space Report</h2>
+    <p class="lead">Live/Work Space Report</p>
     <div class="date">{now.strftime("%B %d, %Y at %I:%M %p")}</div>
-    <div class="subtitle">Inner SE Portland | Powell &amp; Division Corridors</div>
+    <div class="subtitle">Inner SE Portland &middot; Powell &amp; Division Corridors</div>
     <hr>
     <div class="target">Target: 2+ bedroom apartments with kitchen, suitable for live/work use, with reliable fiber internet connectivity.</div>
+    <div class="stats">
+      <div class="stat"><span class="stat-value">{total}</span><span class="stat-label">Listings</span></div>
+      <div class="stat"><span class="stat-value">{fiber_count}</span><span class="stat-label">Fiber Available</span></div>
+    </div>
   </div>
 
-  <h2 class="section-header">Summary Rankings</h2>
-  <table>
-    <tr><th>Rank</th><th>Address</th><th>Neighborhood</th><th>Price</th><th>Beds/Bath</th><th>Internet</th><th>Score</th></tr>
+  <section>
+  <h2>Summary Rankings</h2>
+  <figure>
+  <table role="grid">
+    <thead><tr><th>Rank</th><th>Address</th><th>Neighborhood</th><th>Price</th><th>Beds/Bath</th><th>Internet</th><th>Score</th></tr></thead>
+    <tbody>
 """
 
     for i, (sc, l) in enumerate(scored, 1):
@@ -342,7 +377,7 @@ def build_html(listings, output_path):
       <td><strong>{sc}/100</strong></td>
     </tr>\n"""
 
-    html += "  </table>\n\n  <h2 class=\"section-header\">Detailed Listings</h2>\n\n"
+    html += "    </tbody>\n  </table>\n  </figure>\n  </section>\n\n  <section>\n  <h2>Detailed Listings</h2>\n\n"
 
     for rank, (sc, l) in enumerate(scored, 1):
         # Gather photos
@@ -367,12 +402,12 @@ def build_html(listings, output_path):
         bar_class = "high" if sc >= 75 else "mid" if sc >= 60 else "low"
 
         listing_anchor = f"listing-{l['id']}"
-        html += f"""  <div class="listing-card" id="{listing_anchor}">
-    <div class="listing-header">
+        html += f"""  <article class="listing-card" id="{listing_anchor}">
+    <header>
       <h3>#{rank} &mdash; {l["address"].split(",")[0]}</h3>
-      <div class="meta">{l["neighborhood"]} | ${l["price"]:,}/mo | {l["bedrooms"]}BR/{l["bathrooms"]}BA{sqft_str}</div>
+      <div class="meta">{l["neighborhood"]} &middot; ${l["price"]:,}/mo &middot; {l["bedrooms"]}BR/{l["bathrooms"]}BA{sqft_str}</div>
       <div class="score-bar"><div class="fill {bar_class}" style="width: {sc}%"></div></div>
-    </div>
+    </header>
     <div class="gallery {grid_class}">\n"""
 
         for photo in photos:
@@ -409,18 +444,23 @@ def build_html(listings, output_path):
       <p><strong>Internet</strong> <span class="internet-badge {inet_class}">{inet.get("classification", "N/A")}</span>: {inet.get("broadbandnow_summary", "No data")}</p>
       <a href="{l["url"]}" class="listing-link" target="_blank">View listing on Craigslist &rarr;</a>
     </div>
-  </div>\n\n"""
+  </article>\n\n"""
 
     # Methodology
-    html += """  <div class="methodology">
-    <h2 class="section-header">Methodology</h2>
+    html += """  </section>
+
+  <section>
+  <article>
+    <h2>Methodology</h2>
     <h4>Data Sources</h4>
     <p>Listings sourced from Craigslist Portland (apartments/housing for rent), filtered to 2+ bedrooms within a 3-mile radius of zip code 97202 in Inner SE Portland.</p>
     <p>Internet availability checked at each specific street address using BroadbandNow.com's address-level lookup tool.</p>
 
-    <h4>Scoring Rubric (0-100)</h4>
+    <h4>Scoring Rubric (0&ndash;100)</h4>
+    <figure>
     <table>
-      <tr><th>Factor</th><th>Weight</th><th>Criteria</th></tr>
+      <thead><tr><th>Factor</th><th>Weight</th><th>Criteria</th></tr></thead>
+      <tbody>
       <tr><td>Room Count</td><td>20%</td><td>2 rooms = 15pts, 3+ rooms = 20pts</td></tr>
       <tr><td>Kitchen Quality</td><td>15%</td><td>Full kitchen = 15pts, kitchenette = 10pts</td></tr>
       <tr><td>Powell/Division Proximity</td><td>20%</td><td>On corridor = 20pts, adjacent = 15pts, nearby = 10pts</td></tr>
@@ -428,22 +468,25 @@ def build_html(listings, output_path):
       <tr><td>Square Footage</td><td>10%</td><td>&gt;900 sqft = 10pts, 700-900 = 7pts, &lt;700 = 4pts</td></tr>
       <tr><td>Mixed-Use Friendliness</td><td>10%</td><td>Live/work keywords = 10pts, townhouse = 7pts, none = 3pts</td></tr>
       <tr><td>Fiber Internet</td><td>10%</td><td>Excellent (fiber) = 10pts, Good (cable) = 5pts</td></tr>
+      </tbody>
     </table>
+    </figure>
 
     <h4>Target Neighborhoods</h4>
     <p>Hosford-Abernethy, Richmond, Creston-Kenilworth, Brooklyn, Buckman, and Sunnyside in Inner SE Portland.</p>
 
     <h4>Internet Classification</h4>
-    <p>Excellent: Fiber available (940+ Mbps symmetric). Good: Gigabit cable (2 Gbps) but no fiber. Adequate: Cable &lt;500 Mbps. Poor: DSL only.</p>
-  </div>
+    <p><strong>Excellent:</strong> Fiber available (940+ Mbps symmetric). <strong>Good:</strong> Gigabit cable (2 Gbps) but no fiber. <strong>Adequate:</strong> Cable &lt;500 Mbps. <strong>Poor:</strong> DSL only.</p>
+  </article>
+  </section>
 """
 
     html += f"""
-  <div class="footer">
-    Report generated {now.strftime("%B %d, %Y at %I:%M %p")}. Data may change; verify listings and internet availability before signing a lease.
-  </div>
+  <footer>
+    <p><small>Report generated {now.strftime("%B %d, %Y at %I:%M %p")}. Data may change; verify listings and internet availability before signing a lease.</small></p>
+  </footer>
 
-</div>
+</main>
 
 <div class="lightbox" id="lightbox" onclick="closeLightbox()">
   <img id="lightbox-img" src="" alt="Full size">

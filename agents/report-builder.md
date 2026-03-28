@@ -43,7 +43,7 @@ You read the collected listing data, photos, and Google Maps images, score each 
    - Static Maps: `curl` to `data/screenshots/{id}-map.jpg`
    - Street View: `curl` to `data/screenshots/{id}-streetview.jpg`
 
-5. **Build HTML report** (primary format) using `Write` tool:
+5. **Build HTML report** (primary format) using `Write` tool. Use **Pico CSS v2** (`https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css`) as the component library. Structure HTML with semantic elements (`<article>`, `<section>`, `<header>`, `<footer>`, `<figure>`) to leverage Pico's classless styling. Add custom CSS only for report-specific components (gallery grid, lightbox, score bars, internet badges, distance badges):
 
    **Cover Section:**
    - Gradient header: "Portland Inner SE — Apartment & Office Space Report"
