@@ -1,0 +1,9 @@
+{
+  "name": "officesearch",
+  "version": "1.0.0",
+  "description": "Portland office and space search — find rentals and properties for purchase with fiber internet checks, scoring, and HTML reports.",
+  "author": {
+    "name": "fenixstarlord"
+  },
+  "repository": "https://github.com/fenixstarlord/cowork-officesearch"
+}
