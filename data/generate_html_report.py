@@ -16,7 +16,7 @@ DATA_DIR = "/Users/dit/github/cowork-aparmentsearch/data"
 KEY_LOCATIONS = [
     {"name": "Chris", "address": "10363 SE 24th Ave, Portland, OR", "lat": 45.4338, "lon": -122.6370},
     {"name": "George", "address": "3816 SW Lee St, Portland, OR 97221", "lat": 45.4885, "lon": -122.7148},
-    {"name": "Jasmine", "address": "SE 39th and Hawthorne, Portland, OR", "lat": 45.5118, "lon": -122.6209},
+    {"name": "Jasmine", "address": "3521 SE Main St, Portland, OR 97214", "lat": 45.5122, "lon": -122.6293},
 ]
 
 def haversine_miles(lat1, lon1, lat2, lon2):

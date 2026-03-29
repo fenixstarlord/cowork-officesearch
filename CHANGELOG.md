@@ -47,7 +47,7 @@ All changes to the Portland Office Search plugin. Dates reflect the single-day d
 - Note: `generate_report.py` (PDF) and `score_breakdown()` in HTML report still reference the old rubric (legacy)
 
 ### Distance Calculations
-- Added distance calculations from each listing to three key locations: Chris (SE 24th Ave), George (SW Lee St), Jasmine (SE 39th & Hawthorne)
+- Added distance calculations from each listing to three key locations: Chris (SE 24th Ave), George (SW Lee St), Jasmine (SE Main St)
 - Distances displayed as badges in HTML report listing cards
 - Uses Google Geocoding API with disk-based cache (`data/screenshots/geocode_*.json`)
 - Haversine formula for straight-line distance in miles

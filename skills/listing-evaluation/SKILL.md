@@ -32,7 +32,7 @@ Each listing should show distance from these three locations:
 |------|---------|
 | **Chris** | 10363 SE 24th Ave, Portland, OR |
 | **George** | 3816 SW Lee St, Portland, OR 97221 |
-| **Jasmine** | SE 39th and Hawthorne, Portland, OR |
+| **Jasmine** | 3521 SE Main St, Portland, OR 97214 |
 
 Distances are calculated as straight-line (or driving if available) and displayed in the report for each listing.
 
