@@ -92,6 +92,50 @@ The search area covers **central Portland on both sides of the Willamette River*
 - **Portland Streetcar**: NS Line (Pearl to South Waterfront), A/B Loop (Lloyd to PSU)
 - Walk Score 80-98 in central neighborhoods
 
+## Neighborhood Hipness Baselines
+
+Pre-assigned hipness scores reflecting each neighborhood's cultural vibrancy and indie character. Used as the baseline component of the hipness scoring system (see `hipness-scoring` skill).
+
+### East Side
+
+| Neighborhood | Baseline | Rationale |
+|-------------|----------|-----------|
+| Buckman | 90 | Epicenter — Hawthorne, Belmont, dense indie scene, bars, galleries |
+| Sunnyside | 88 | Between Hawthorne & Belmont, vintage character, strong cafe/bar culture |
+| Hawthorne | 92 | Iconic Portland corridor, nationally recognized indie strip |
+| Belmont | 85 | Strong indie retail/restaurant corridor, creative community |
+| Hosford-Abernethy | 82 | Division St development, new restaurants, food carts, mixed-use |
+| Richmond | 80 | Division + Hawthorne access, dense indie food, bikeable |
+| Ladd's Addition | 78 | Unique character, historic, walkable to hip corridors, but quiet |
+| Sellwood-Moreland | 72 | Antique district, indie shops, but more family-oriented |
+| Brooklyn | 65 | Industrial edges, Orange Line, some new development, emerging |
+| Creston-Kenilworth | 58 | Foster corridor emerging, but still transitional |
+| Westmoreland | 68 | Walkable main street, Orange Line, local shops |
+| Laurelhurst | 60 | Residential, tree-lined, park-adjacent, but limited commercial |
+| Reed | 50 | College-adjacent, quiet, limited indie commercial |
+| Eastmoreland | 42 | Mostly single-family residential, low commercial activity |
+
+### East Side — North/Inner NE
+
+| Neighborhood | Baseline | Rationale |
+|-------------|----------|-----------|
+| Eliot / Boise / King | 88 | Alberta + Mississippi + Williams — major hip corridors |
+| Irvington | 65 | Historic, walkable to Lloyd/Broadway, but residential |
+| Grant Park | 55 | Residential, good schools, limited indie scene |
+| Sullivan's Gulch | 58 | Near Lloyd, MAX access, but not a cultural destination |
+| Hollywood | 60 | Transit hub, commercial district, some indie spots, improving |
+
+### West Side
+
+| Neighborhood | Baseline | Rationale |
+|-------------|----------|-----------|
+| Pearl District | 82 | Galleries, restaurants, First Thursday art walks, upscale-hip |
+| Old Town / Chinatown | 55 | Transitional, some creative/music venues, safety concerns |
+| Downtown | 45 | Office-heavy, limited indie character, some cultural venues |
+| Goose Hollow | 48 | Residential, near Providence Park, limited indie scene |
+| South Portland | 52 | South Waterfront development, Lair Hill has some character |
+| NW 23rd / Nob Hill | 78 | Strong indie retail/restaurant corridor, walkable, upscale-hip |
+
 ## Search Radius Guidance
 
 When filtering on listing sites, use multiple searches to cover the full target area:

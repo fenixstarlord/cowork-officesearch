@@ -93,6 +93,7 @@ Since Chrome is a visible browser window the user can interact with:
 | `skills/fiber-internet-check/SKILL.md` | ISP coverage lookup procedures (BroadbandNow primary) |
 | `skills/listing-evaluation/SKILL.md` | Rental scoring and filtering criteria |
 | `skills/purchase-evaluation/SKILL.md` | Purchase scoring and filtering criteria ($700k cap) |
+| `skills/hipness-scoring/SKILL.md` | Area hipness/vibrancy scoring (baseline + live data + web buzz) |
 | **Rental Commands** | |
 | `commands/rental-search-listings.md` | Stage 1: search rental listing sites |
 | `commands/rental-check-internet.md` | Stage 2: check fiber availability for rentals |

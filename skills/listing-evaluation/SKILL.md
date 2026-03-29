@@ -23,8 +23,9 @@ A listing MUST meet ALL of these to be included:
 | Square footage | 10% | Over 900 sqft = 10pts, 700-900 = 7pts, 500-700 = 5pts, under 500 = 2pts |
 | Mixed-use friendliness | 10% | Explicit "live/work" or "home office" = 10pts, ground floor commercial = 7pts, "flex space" / townhouse = 5pts, no mention = 2pts |
 | Fiber internet quality | 10% | Fiber 8Gbps = 10pts, Fiber 940Mbps = 8pts, gigabit cable only = 4pts, cable only = 2pts, no data = 0pts |
-| Food proximity (indie) | 15% | Near indie food corridor = 15pts, mixed indie/chain = 10pts, mostly chains = 5pts, chain-heavy/no food = 2pts |
-| Main street location | 15% | On a main street = 15pts, 1-2 blocks away = 11pts, 3-5 blocks = 7pts, not near = 3pts |
+| Food proximity (indie) | 12% | Near indie food corridor = 12pts, mixed indie/chain = 8pts, mostly chains = 4pts, chain-heavy/no food = 2pts |
+| Main street location | 12% | On a main street = 12pts, 1-2 blocks away = 9pts, 3-5 blocks = 6pts, not near = 2pts |
+| Hipness score | 6% | See `hipness-scoring` skill. Score mapped: 85+ = 6pts, 70-84 = 5pts, 55-69 = 4pts, 40-54 = 2pts, below 40 = 1pt |
 
 ## Food Proximity
 
