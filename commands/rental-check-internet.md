@@ -20,19 +20,26 @@ None — reads addresses from `data/output/listings.json`
 3. Filter to listings where `internet` is null (allows re-running to pick up where it left off)
 4. Open a Chrome tab if not already available
 
-5. **For each listing address** (use BroadbandNow as primary — one lookup per address gets all providers):
+5. **Determine checking mode** based on listing count:
+   - 5 or fewer listings: Sequential (single tab)
+   - 6-15 listings: Parallel with 2 tabs
+   - 16+ listings: Parallel with 3 tabs
+
+6. **For each listing address** (use BroadbandNow as primary — one lookup per address gets all providers):
    a. **BroadbandNow** (PRIMARY): Use the Google Places autocomplete pattern from `fiber-internet-check` skill:
       - Type short address (number + street + city) into search input
       - Wait for autocomplete dropdown, click the matching suggestion
       - Extract all providers, speeds, connection types from results page
       - For subsequent addresses, use the "refine search" box on the results page
-   b. **Direct ISP sites** (FALLBACK ONLY): If BroadbandNow fails or data seems incomplete, check CenturyLink/Xfinity directly
-   c. Build the internet JSON object per the schema in `search-resources` skill — **no ISP screenshots needed**, text data only
-   d. Classify internet suitability (Excellent/Good/Adequate/Poor) per `fiber-internet-check` skill
-   e. Update the listing's `internet` field
+   b. **Parallel mode**: When using multiple tabs, rotate between them during wait periods (see `internet-checker` agent Parallel Checking section)
+   c. **Direct ISP sites** (FALLBACK ONLY): If BroadbandNow fails or data seems incomplete, check CenturyLink/Xfinity directly
+   d. Build the internet JSON object per the schema in `search-resources` skill — **no ISP screenshots needed**, text data only
+   e. Classify internet suitability (Excellent/Good/Adequate/Poor) per `fiber-internet-check` skill
+   f. Update the listing's `internet` field
+   g. If rate-limited during parallel mode, fall back to sequential with 5-second delays
 
-6. Write enriched data back to `data/output/listings.json`
-7. Report summary: "Checked X addresses. Fiber available at Y. Cable-only at Z. Failed checks: W."
+7. Write enriched data back to `data/output/listings.json`
+8. Report summary: "Checked X addresses. Fiber available at Y. Cable-only at Z. Failed checks: W."
 
 ## Expected Output
 - `data/output/listings.json` updated with internet data for each listing

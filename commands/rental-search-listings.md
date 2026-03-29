@@ -34,24 +34,45 @@ Confirm the parsed criteria:
 4. Create `data/output/screenshots/` directory if needed
 5. Initialize empty `data/output/listings.json` array
 
-6. **Translate criteria to site-specific filters:**
+6. **Save search criteria** to `data/output/search-criteria.json` for `/watch` command:
+   ```json
+   {
+     "type": "rental",
+     "saved_at": "2026-03-29T10:00:00",
+     "criteria": { "bedrooms": 2, "min_sqft": 700, "max_price": 2500, "mixed_use": "preferred" }
+   }
+   ```
+
+7. **Translate criteria to site-specific filters:**
    - **Craigslist**: URL params (`min_bedrooms`, `max_price`, `min_sqft`, `postal`, `search_distance`)
    - **Zillow/Redfin**: Filter panel controls
    - **Apartments.com/HotPads**: Search bar + filter panel
 
-7. **For each listing site**, apply filters and extract listings:
+8. **For each listing site**, apply filters and extract listings:
    a. Navigate to site URL
    b. Apply user's filters
    c. Use multiple zip code searches for broad target area (per `portland-geography`)
    d. Extract listing cards, click into each
    e. Use `find` + `read_page` for structured data
-   f. Extract up to 4 gallery photos via `javascript_tool` + download with `curl`
-   g. Build listing JSON objects
+   f. Extract up to 8 gallery photos + floor plans via `javascript_tool` + download with `curl`
+   g. Extract price history and lease terms when visible on listing pages
+   h. Build listing JSON objects (including new fields: `price_history`, `lease_terms`, `floorplan_path`, etc.)
 
-8. **If user wants mixed-use**, also search LoopNet, CommercialCafe, Craigslist commercial
+9. **If user wants mixed-use**, also search LoopNet, CommercialCafe, Craigslist commercial
 
-9. Write listings to `data/output/listings.json`
-10. Report summary to user
+10. **Search additional sources** (ask user for login first):
+    - Facebook Marketplace (propertyrentals category)
+    - Nextdoor (community rental listings)
+    Skip these if user declines to log in.
+
+11. **Run deduplication** per the `deduplication` skill:
+    - Normalize all addresses
+    - Detect duplicates by address match or address + price match
+    - Merge duplicates, preserving best data and tracking cross-listing URLs in `also_listed_on`
+    - Report dedup summary
+
+12. Write deduplicated listings to `data/output/listings.json`
+13. Report summary to user: "Found X listings across Y sites (Z after deduplication). W commercial/mixed-use."
 
 ## Craigslist URL Parameter Reference
 

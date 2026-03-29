@@ -13,6 +13,15 @@ description: "Use this skill when searching for apartment or rental listings, or
 | HotPads | `https://hotpads.com/portland-or/apartments-for-rent` | Filter panel 2+ beds, map-based zoom to SE |
 | Redfin | `https://www.redfin.com/city/30772/OR/Portland/apartments-for-rent` | Filter 2+ beds, check both Apartment and House types |
 
+## Additional Listing Sources
+
+| Site | Base URL | Strategy |
+|------|----------|----------|
+| Facebook Marketplace | `https://www.facebook.com/marketplace/portland/propertyrentals/` | Filter by price, bedrooms. Many FSBO/private listings not on major sites. Login required — ask user to log in first. |
+| Nextdoor | `https://nextdoor.com/for_sale_and_free/?search=rental` | Community-sourced listings, often private landlords. Login required — ask user to log in first. |
+
+**Note**: Facebook Marketplace and Nextdoor require user login. Before searching these sites, ask the user: "I need to search Facebook Marketplace / Nextdoor. Please log in to [site] in the browser, then tell me when you're ready." Skip if user declines.
+
 ## Commercial/Mixed-Use Listing Sites
 
 | Site | Base URL | Strategy |
@@ -57,9 +66,16 @@ Step-by-step Chrome tool usage pattern for each listing site:
   var thumbs = document.querySelectorAll('.thumb img');
   var urls = [];
   thumbs.forEach(function(t) { if(t.src) urls.push(t.src.replace('_50x50c.jpg','_600x450.jpg')); });
-  JSON.stringify(urls.slice(0,4))
+  JSON.stringify(urls.slice(0,8))
   ```
-  Download each with `curl -s -o data/output/screenshots/{id}-{n}.jpg "{url}"` (n = 1-4). Do NOT rely on Chrome `save_to_disk` screenshots — they exist only in extension memory and never write to disk.
+  Download each with `curl -s -o data/output/screenshots/{id}-{n}.jpg "{url}"` (n = 1 through 8, configurable via `data/config.json` `max_photos_per_listing`). Do NOT rely on Chrome `save_to_disk` screenshots — they exist only in extension memory and never write to disk.
+
+  **Floor plan extraction**: If the listing has a floor plan image (common on Zillow, Apartments.com), extract it separately:
+  ```js
+  var fp = document.querySelector('[alt*="floor plan"], [alt*="Floor Plan"], .floor-plan img');
+  fp ? fp.src : null
+  ```
+  Download to `data/output/screenshots/{id}-floorplan.jpg` if found.
 
 ### Chrome Extension Troubleshooting
 
@@ -67,6 +83,57 @@ If `computer` actions (screenshot, click, key) fail with "Cannot access a chrome
 1. Disable conflicting Chrome extensions
 2. Restart Chrome
 3. Re-run the search
+
+## Price History & Trends
+
+When visiting individual listing detail pages, extract price history data if available:
+
+**Zillow**: Look for "Price History" section on listing page — contains date, event (listed, price change, sold), and price
+**Redfin**: Look for "Price Insights" or "Price History" section — similar format
+**Apartments.com**: May show "Price Change" indicators on listing cards
+**Craigslist**: No history available — note original post date only
+
+Extract into the listing object:
+```json
+{
+  "price_history": [
+    {"date": "2026-03-01", "event": "Listed", "price": 1850},
+    {"date": "2026-03-15", "event": "Price drop", "price": 1750}
+  ],
+  "days_on_market": 28,
+  "price_trend": "dropping"
+}
+```
+
+If no history is available, set `"price_history": null`.
+
+## Lease Terms Extraction
+
+When on a listing detail page, also extract lease/move-in terms if visible:
+
+**Keywords to scan for**:
+- Lease length: "12 month", "6 month", "month-to-month", "flexible lease"
+- Move-in costs: "deposit", "first/last", "application fee", "move-in special"
+- Pet policy: "pets allowed", "no pets", "cats ok", "dogs ok", "pet deposit", "pet rent"
+- Parking: "parking included", "garage", "off-street", "street parking", "parking fee"
+- Utilities: "utilities included", "water included", "tenant pays", "gas/electric"
+
+Extract into the listing object:
+```json
+{
+  "lease_terms": {
+    "lease_length": "12 months",
+    "deposit": 1850,
+    "application_fee": 50,
+    "pet_policy": "cats ok, no dogs",
+    "parking": "off-street included",
+    "utilities": "water/sewer/trash included, tenant pays electric/gas",
+    "move_in_special": null
+  }
+}
+```
+
+If terms are not visible, set `"lease_terms": null`.
 
 ## No Price Cap
 
@@ -92,7 +159,22 @@ Each listing should be stored as a JSON object following this structure:
   "description_excerpt": "...",
   "neighborhood": "Hosford-Abernethy",
   "listing_type": "residential",
-  "photo_paths": ["data/output/screenshots/zillow-12345-1.jpg", "data/output/screenshots/zillow-12345-2.jpg", "data/output/screenshots/zillow-12345-3.jpg", "data/output/screenshots/zillow-12345-4.jpg"],
+  "photo_paths": ["data/output/screenshots/zillow-12345-1.jpg", "data/output/screenshots/zillow-12345-2.jpg"],
+  "floorplan_path": null,
+  "also_listed_on": [],
+  "price_history": null,
+  "days_on_market": null,
+  "price_trend": null,
+  "lease_terms": null,
+  "hipness_score": null,
+  "hipness_breakdown": null,
+  "hipness_buzz": null,
+  "hipness_tier": null,
+  "safety_score": null,
+  "safety_breakdown": null,
+  "safety_details": null,
+  "safety_tier": null,
+  "is_new": false,
   "internet": null
 }
 ```

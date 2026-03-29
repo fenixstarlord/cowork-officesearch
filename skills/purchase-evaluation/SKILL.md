@@ -17,16 +17,17 @@ A listing MUST meet ALL of these to be included:
 
 | Factor | Weight | Scoring |
 |--------|--------|---------|
-| Price value | 15% | Under $400k = 15pts, $400-500k = 12pts, $500-600k = 9pts, $600-700k = 6pts |
-| Room count / size | 10% | 4+ rooms = 10pts, 3 rooms = 8pts, 2 rooms = 5pts |
-| Square footage | 10% | Over 1,500 sqft = 10pts, 1,000-1,500 = 8pts, 700-1,000 = 5pts, under 700 = 3pts |
-| Location quality | 10% | Walkable commercial corridor = 10pts, inner neighborhood = 8pts, outer neighborhood = 5pts |
+| Price value | 12% | Under $400k = 12pts, $400-500k = 10pts, $500-600k = 7pts, $600-700k = 5pts |
+| Room count / size | 8% | 4+ rooms = 8pts, 3 rooms = 6pts, 2 rooms = 4pts |
+| Square footage | 8% | Over 1,500 sqft = 8pts, 1,000-1,500 = 6pts, 700-1,000 = 4pts, under 700 = 2pts |
+| Location quality | 8% | Walkable commercial corridor = 8pts, inner neighborhood = 6pts, outer neighborhood = 4pts |
 | Mixed-use potential | 10% | Already mixed-use/commercial = 10pts, duplex/multi-family = 8pts, house with separate entrance = 5pts, standard house = 3pts |
 | Fiber internet | 10% | Fiber confirmed = 10pts, gigabit cable = 5pts, cable only = 3pts, no data = 0pts |
 | Property condition | 5% | Move-in ready / recently renovated = 5pts, good condition = 4pts, needs work = 2pts, major renovation needed = 1pt |
-| Food proximity (indie) | 12% | Near indie food corridor = 12pts, mixed indie/chain = 8pts, mostly chains = 4pts, chain-heavy/no food = 2pts |
-| Main street location | 12% | On a main street = 12pts, 1-2 blocks away = 9pts, 3-5 blocks = 6pts, not near = 2pts |
-| Hipness score | 6% | See `hipness-scoring` skill. Score mapped: 85+ = 6pts, 70-84 = 5pts, 55-69 = 4pts, 40-54 = 2pts, below 40 = 1pt |
+| Food proximity (indie) | 11% | Near indie food corridor = 11pts, mixed indie/chain = 7pts, mostly chains = 4pts, chain-heavy/no food = 2pts |
+| Main street location | 10% | On a main street = 10pts, 1-2 blocks away = 8pts, 3-5 blocks = 5pts, not near = 2pts |
+| Hipness score | 9% | See `hipness-scoring` skill. Score mapped: 85+ = 9pts, 70-84 = 7pts, 55-69 = 5pts, 40-54 = 3pts, below 40 = 1pt |
+| Safety score | 9% | See `safety-scoring` skill. Score mapped: 80+ = 9pts, 65-79 = 7pts, 50-64 = 5pts, 35-49 = 3pts, below 35 = 1pt |
 
 ## Food Proximity
 
@@ -69,6 +70,10 @@ Scan descriptions for:
 - "separate entrance", "ADU", "accessory dwelling"
 - "basement office", "ground floor commercial"
 - "income property", "investment"
+
+## Key Locations for Distance Calculation
+
+Key locations are configured in `data/config.json` under `key_locations`. The report dynamically reads from this config. Default locations: Chris, George, Jasmine (see config for addresses).
 
 ## Disqualifiers (Auto-Reject)
 

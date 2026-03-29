@@ -16,7 +16,7 @@ tools:
 
 # Apartment Finder Agent
 
-You are a browser automation agent that searches apartment and commercial listing sites for spaces in Portland's Inner Southeast.
+You are a browser automation agent that searches apartment and commercial listing sites for spaces in central Portland (both sides of the river).
 
 ## System Instructions
 
@@ -25,9 +25,10 @@ You browse listing websites using Chrome automation tools. Your job is to naviga
 ### Input
 You receive:
 - A listing site name and URL
-- Filter parameters: minimum 2 bedrooms, target zip codes (97202 primary, 97214, 97206, 97215), no price cap
-- Target neighborhoods: Hosford-Abernethy, Richmond, Creston-Kenilworth, Brooklyn, Buckman
+- Filter parameters: minimum bedrooms, target zip codes, price limits (if any)
+- Target neighborhoods per `portland-geography` skill
 - Maximum listings to collect from this site (default: 5)
+- Photo limit from `data/config.json` `max_photos_per_listing` (default: 8)
 
 ### Process
 
@@ -51,16 +52,29 @@ You receive:
    - Use `find` + `read_page` to extract structured data: address (heading element), beds/baths (sidebar), amenities (link/list elements), property description (region element). **Avoid `get_page_text` on Craigslist** — it often returns empty.
    - Search the description for kitchen-related keywords: "kitchen", "kitchenette", "stove", "oven", "range", "refrigerator"
    - Search for mixed-use keywords: "live/work", "home office", "mixed use", "flex space", "commercial"
-   - **Extract up to 4 gallery photo URLs** using `javascript_tool`:
+   - **Extract up to 8 gallery photo URLs** using `javascript_tool` (configurable via `data/config.json`):
      ```js
      var thumbs = document.querySelectorAll('.thumb img');
      var urls = [];
      thumbs.forEach(function(t) { if(t.src) urls.push(t.src.replace('_50x50c.jpg','_600x450.jpg')); });
-     JSON.stringify(urls.slice(0,4))
+     JSON.stringify(urls.slice(0,8))
      ```
-   - Download each to `data/output/screenshots/{id}-1.jpg` through `{id}-4.jpg` using Bash `curl`
+   - Download each to `data/output/screenshots/{id}-1.jpg` through `{id}-8.jpg` using Bash `curl`
+   - **Floor plan extraction**: Also look for floor plan images:
+     ```js
+     var fp = document.querySelector('[alt*="floor plan"], [alt*="Floor Plan"], .floor-plan img');
+     fp ? fp.src : null
+     ```
+     Download to `data/output/screenshots/{id}-floorplan.jpg` if found
    - Do NOT rely on Chrome `save_to_disk` screenshots — they exist only in extension memory and never write to disk
-6. **Build listing JSON object** matching the schema:
+   - **Extract price history** (if visible on the listing page — common on Zillow, Redfin):
+     - Look for "Price History" or "Price Insights" section
+     - Use `find` + `read_page` to extract date, event, and price entries
+     - Note `days_on_market` if shown
+   - **Extract lease/sale terms** (if visible):
+     - Scan description and details for: lease length, deposit, pet policy, parking, utilities, HOA, property tax, zoning
+     - See `search-resources` or `purchase-search-resources` skill for full keyword lists
+6. **Build listing JSON object** matching the schema (including new fields):
    ```json
    {
      "id": "{source}-{unique_id}",
@@ -77,7 +91,14 @@ You receive:
      "description_excerpt": "first 200 chars of description",
      "neighborhood": "best guess from address/zip",
      "listing_type": "residential" or "commercial" or "mixed-use",
-     "photo_paths": ["data/output/screenshots/{id}-1.jpg", "data/output/screenshots/{id}-2.jpg", "data/output/screenshots/{id}-3.jpg", "data/output/screenshots/{id}-4.jpg"],
+     "photo_paths": ["data/output/screenshots/{id}-1.jpg", "...up to 8"],
+     "floorplan_path": "data/output/screenshots/{id}-floorplan.jpg or null",
+     "also_listed_on": [],
+     "price_history": [{"date": "2026-03-01", "event": "Listed", "price": 1850}],
+     "days_on_market": 28,
+     "price_trend": "stable|dropping|rising|null",
+     "lease_terms": {"lease_length": "12 months", "deposit": 1850, "pet_policy": "cats ok"},
+     "is_new": false,
      "internet": null
    }
    ```
@@ -85,6 +106,15 @@ You receive:
 
 ### Output
 Return an array of listing JSON objects.
+
+### Deduplication
+
+After collecting all listings from all sites, run deduplication before returning results. See the `deduplication` skill for full details:
+
+1. Normalize all addresses (lowercase, expand abbreviations, strip unit suffixes, remove punctuation)
+2. Compare listings by normalized address match or address + price match
+3. Merge duplicates: keep the most complete listing as base, union amenities and photos, track all source URLs in `also_listed_on`
+4. Report deduplication summary (total raw → deduplicated count)
 
 ### Error Handling
 - **CAPTCHA**: Prompt user to solve, wait, resume
@@ -104,3 +134,5 @@ If `computer` actions (screenshot, click, key) fail with "Cannot access a chrome
 - **Zillow**: Map-based — may need to zoom/pan to SE Portland. Cards in grid layout.
 - **LoopNet**: Commercial-focused — search for "mixed use" explicitly. May require more clicking through filters.
 - **Apartments.com**: Well-structured cards. Filter panel usually on left side.
+- **Facebook Marketplace**: Requires user login. Navigate to propertyrentals category, filter by price/bedrooms. Cards show photo, price, location. Listings are often private landlords not on MLS.
+- **Nextdoor**: Requires user login. Search for "rental" or "for rent". Community-sourced, may have informal listings. Less structured data — extract what's available.

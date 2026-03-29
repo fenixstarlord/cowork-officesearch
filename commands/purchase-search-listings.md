@@ -20,7 +20,16 @@ Search residential and commercial listing sites for properties for sale in Portl
 4. Create `data/output/screenshots/` directory if it doesn't exist
 5. Initialize empty `data/output/purchase-listings.json` array
 
-6. **For each residential sale site** (Zillow, Redfin, Realtor.com):
+6. **Save search criteria** to `data/output/search-criteria.json` for `/watch` command:
+   ```json
+   {
+     "type": "purchase",
+     "saved_at": "2026-03-29T10:00:00",
+     "criteria": { "max_price": 700000, "max_results": 20, "neighborhood": "all" }
+   }
+   ```
+
+7. **For each residential sale site** (Zillow, Redfin, Realtor.com):
    a. Navigate to the site's Portland for-sale URL
    b. Apply filters: max price $700,000, target zip codes/neighborhoods (use multiple searches per `portland-geography` Search Radius Guidance)
    c. Include both houses and multi-family/commercial properties
@@ -30,19 +39,32 @@ Search residential and commercial listing sites for properties for sale in Portl
       - Use `read_page` on the card ref to get the listing URL (href)
       - `navigate` directly to the listing URL
       - Use `find` + `read_page` to extract structured data (address, price, beds/baths, sqft, lot size, year built, property type)
-      - Extract up to 4 gallery photos via `javascript_tool` and download with `curl`
-      - Build a listing JSON object per the purchase schema in `purchase-search-resources` skill
+      - Extract up to 8 gallery photos + floor plans via `javascript_tool` and download with `curl`
+      - Extract price history, previous sales, estimated value if visible on listing page
+      - Extract sale terms: HOA fees, property tax, zoning, special assessments
+      - Build a listing JSON object per the purchase schema in `purchase-search-resources` skill (including new fields)
       - Add to listings array
    g. Navigate back to results or next site
 
-7. **For each commercial sale site** (LoopNet, Craigslist commercial):
+8. **For each commercial sale site** (LoopNet, Craigslist commercial):
    a. Navigate to the site's Portland for-sale URL
    b. Apply filters: max price $700,000, search for "mixed use", "live work", "retail", "office"
    c. Extract listings following the same pattern
    d. Set `listing_type` to "commercial" or "mixed-use"
 
-8. Write the complete listings array to `data/output/purchase-listings.json`
-9. Report summary to user: "Found X properties for sale across Y sites (Z residential, W commercial)"
+9. **Search additional sources** (ask user for login first):
+   - Facebook Marketplace (propertyforsale category)
+   - Nextdoor (community FSBO listings)
+   Skip these if user declines to log in.
+
+10. **Run deduplication** per the `deduplication` skill:
+    - Normalize all addresses
+    - Detect duplicates across sites
+    - Merge, preserving best data and tracking `also_listed_on`
+    - Report dedup summary
+
+11. Write deduplicated listings to `data/output/purchase-listings.json`
+12. Report summary: "Found X properties across Y sites (Z after dedup). W residential, V commercial/mixed-use."
 
 ## Expected Output
 - `data/output/purchase-listings.json` populated with listing objects (internet field set to null)
