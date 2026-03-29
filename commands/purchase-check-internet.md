@@ -20,15 +20,22 @@ None — reads addresses from `data/output/purchase-listings.json`
 3. Filter to listings where `internet` is null (allows re-running to pick up where it left off)
 4. Open a Chrome tab if not already available
 
-5. **For each listing address** (use BroadbandNow as primary — one lookup per address gets all providers):
-   a. **BroadbandNow** (PRIMARY): Use the Google Places autocomplete pattern from `fiber-internet-check` skill
-   b. **Direct ISP sites** (FALLBACK ONLY): If BroadbandNow fails
-   c. Build the internet JSON object — **no ISP screenshots needed**, text data only
-   d. Classify internet suitability (Excellent/Good/Adequate/Poor)
-   e. Update the listing's `internet` field
+5. **Determine checking mode** based on listing count:
+   - 5 or fewer listings: Sequential (single tab)
+   - 6-15 listings: Parallel with 2 tabs
+   - 16+ listings: Parallel with 3 tabs
 
-6. Write enriched data back to `data/output/purchase-listings.json`
-7. Report summary: "Checked X addresses. Fiber available at Y. Cable-only at Z. Failed checks: W."
+6. **For each listing address** (use BroadbandNow as primary — one lookup per address gets all providers):
+   a. **BroadbandNow** (PRIMARY): Use the Google Places autocomplete pattern from `fiber-internet-check` skill
+   b. **Parallel mode**: When using multiple tabs, rotate between them during wait periods (see `internet-checker` agent Parallel Checking section)
+   c. **Direct ISP sites** (FALLBACK ONLY): If BroadbandNow fails
+   d. Build the internet JSON object — **no ISP screenshots needed**, text data only
+   e. Classify internet suitability (Excellent/Good/Adequate/Poor)
+   f. Update the listing's `internet` field
+   g. If rate-limited during parallel mode, fall back to sequential with 5-second delays
+
+7. Write enriched data back to `data/output/purchase-listings.json`
+8. Report summary: "Checked X addresses. Fiber available at Y. Cable-only at Z. Failed checks: W."
 
 ## Expected Output
 - `data/output/purchase-listings.json` updated with internet data

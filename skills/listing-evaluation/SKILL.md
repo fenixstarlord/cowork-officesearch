@@ -17,14 +17,16 @@ A listing MUST meet ALL of these to be included:
 
 | Factor | Weight | Scoring |
 |--------|--------|---------|
-| Room count | 15% | Meets minimum = 11pts, exceeds by 1+ = 15pts |
-| Kitchen quality | 10% | Full kitchen = 10pts, kitchenette = 7pts, unclear = 3pts |
-| Price reasonableness | 15% | Under $1,800 = 15pts, $1,800-2,200 = 12pts, $2,200-2,800 = 8pts, $2,800-3,500 = 5pts, over $3,500 = 2pts |
-| Square footage | 10% | Over 900 sqft = 10pts, 700-900 = 7pts, 500-700 = 5pts, under 500 = 2pts |
-| Mixed-use friendliness | 10% | Explicit "live/work" or "home office" = 10pts, ground floor commercial = 7pts, "flex space" / townhouse = 5pts, no mention = 2pts |
+| Room count | 12% | Meets minimum = 9pts, exceeds by 1+ = 12pts |
+| Kitchen quality | 8% | Full kitchen = 8pts, kitchenette = 5pts, unclear = 2pts |
+| Price reasonableness | 14% | Under $1,800 = 14pts, $1,800-2,200 = 11pts, $2,200-2,800 = 7pts, $2,800-3,500 = 4pts, over $3,500 = 2pts |
+| Square footage | 8% | Over 900 sqft = 8pts, 700-900 = 6pts, 500-700 = 4pts, under 500 = 2pts |
+| Mixed-use friendliness | 8% | Explicit "live/work" or "home office" = 8pts, ground floor commercial = 6pts, "flex space" / townhouse = 4pts, no mention = 2pts |
 | Fiber internet quality | 10% | Fiber 8Gbps = 10pts, Fiber 940Mbps = 8pts, gigabit cable only = 4pts, cable only = 2pts, no data = 0pts |
-| Food proximity (indie) | 15% | Near indie food corridor = 15pts, mixed indie/chain = 10pts, mostly chains = 5pts, chain-heavy/no food = 2pts |
-| Main street location | 15% | On a main street = 15pts, 1-2 blocks away = 11pts, 3-5 blocks = 7pts, not near = 3pts |
+| Food proximity (indie) | 12% | Near indie food corridor = 12pts, mixed indie/chain = 8pts, mostly chains = 4pts, chain-heavy/no food = 2pts |
+| Main street location | 10% | On a main street = 10pts, 1-2 blocks away = 8pts, 3-5 blocks = 5pts, not near = 2pts |
+| Hipness score | 9% | See `hipness-scoring` skill. Score mapped: 85+ = 9pts, 70-84 = 7pts, 55-69 = 5pts, 40-54 = 3pts, below 40 = 1pt |
+| Safety score | 9% | See `safety-scoring` skill. Score mapped: 80+ = 9pts, 65-79 = 7pts, 50-64 = 5pts, 35-49 = 3pts, below 35 = 1pt |
 
 ## Food Proximity
 
@@ -52,13 +54,15 @@ Listings on or near these streets score higher:
 
 ## Key Locations for Distance Calculation
 
-Each listing should show distance from these three locations:
+Key locations are configured in `data/config.json` under `key_locations`. Each entry has a `name` and `address`. The default locations are:
 
 | Name | Address |
 |------|---------|
 | **Chris** | 10363 SE 24th Ave, Portland, OR |
 | **George** | 3816 SW Lee St, Portland, OR 97221 |
 | **Jasmine** | 3521 SE Main St, Portland, OR 97214 |
+
+To add, remove, or change key locations, edit `data/config.json`. The report and distance calculations dynamically read from this config — no code changes needed.
 
 Distances are calculated as straight-line (or driving if available) and displayed in the report for each listing.
 

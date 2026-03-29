@@ -86,9 +86,29 @@ Return an internet availability JSON object — **no screenshots**:
 - **Poor**: DSL only or no broadband options
 - **Unknown**: All checks failed
 
+### Parallel Checking (Multi-Tab)
+
+To speed up internet checks when there are many listings, use multiple browser tabs:
+
+1. **Open 2-3 tabs** using `tabs_create_mcp` (do NOT exceed 3 — BroadbandNow may rate-limit)
+2. **Assign addresses to tabs**: Tab 1 gets addresses 1, 4, 7...; Tab 2 gets 2, 5, 8...; Tab 3 gets 3, 6, 9...
+3. **Rotate between tabs**:
+   - Switch to Tab 1, start typing address, initiate autocomplete
+   - While waiting for autocomplete/results (2-3 second waits), switch to Tab 2 and start its address
+   - Cycle back to Tab 1 to extract results, then start its next address
+4. **Merge results**: Collect all internet data objects, match back to listing IDs
+
+**When to use parallel checking**:
+- 5 or fewer listings: Sequential is fine (single tab)
+- 6-15 listings: Use 2 tabs
+- 16+ listings: Use 3 tabs
+
+**Caution**: If BroadbandNow starts showing CAPTCHAs or rate-limit messages, fall back to single-tab sequential mode and add a 5-second wait between addresses.
+
 ### Error Handling
 - **CAPTCHA**: Prompt user, wait, resume
 - **Autocomplete not appearing**: Try shorter address, try from homepage instead of refine box
 - **Address not recognized**: Try without directional prefix ("Powell Blvd" instead of "SE Powell Blvd")
+- **Rate limiting**: If parallel mode triggers rate limits, fall back to single-tab sequential with 5-second delays
 - **Timeout**: Wait 5 seconds, retry once, mark as "check_failed"
 - **Site down**: Mark as "check_failed", note in output

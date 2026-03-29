@@ -1,0 +1,35 @@
+{
+  "key_locations": [
+    {
+      "name": "Chris",
+      "address": "10363 SE 24th Ave, Portland, OR"
+    },
+    {
+      "name": "George",
+      "address": "3816 SW Lee St, Portland, OR 97221"
+    },
+    {
+      "name": "Jasmine",
+      "address": "3521 SE Main St, Portland, OR 97214"
+    }
+  ],
+  "search_defaults": {
+    "rental": {
+      "bedrooms": 2,
+      "min_sqft": null,
+      "max_price": null,
+      "mixed_use": "preferred"
+    },
+    "purchase": {
+      "max_price": 700000,
+      "max_results": 20
+    }
+  },
+  "report_settings": {
+    "max_photos_per_listing": 8,
+    "include_interactive_map": true,
+    "include_hipness_score": true,
+    "include_safety_score": true,
+    "show_rejected_listings": false
+  }
+}
