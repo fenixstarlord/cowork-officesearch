@@ -7,6 +7,8 @@ tools:
   - Bash
   - Write
   - Read
+  - mcp__12c0affe-55f7-4e2d-9572-8089b4b96d61__notion-create-pages
+  - mcp__12c0affe-55f7-4e2d-9572-8089b4b96d61__notion-fetch
 ---
 
 # Report Builder Agent
@@ -81,6 +83,19 @@ You read the collected listing data, photos, and Google Maps images, score each 
 - PDF file at `data/output/portland-apartment-report.pdf` (alternative, if requested)
 - Chat message: "Report generated with X listings. Top recommendations: [top 3 addresses with scores]"
 
+### Notion Integration
+
+After generating the HTML report, ask the user:
+> "Would you like me to create this report as a Notion document in the Document Hub?"
+
+If yes:
+1. Convert the report content to Notion-flavored Markdown (fetch `notion://docs/enhanced-markdown-spec` first for syntax reference)
+2. Create a page in the Document Hub database using `notion-create-pages`:
+   - **Parent**: `{"type": "data_source_id", "data_source_id": "1df03407-763c-8098-81b8-000b500508b8"}`
+   - **Doc name**: "Portland Office/Apartment Search Report — {Month} {Year}" (rental) or "Portland Properties For Sale Report — {Month} {Year}" (purchase)
+   - **Category**: `["Planning"]`
+   - **Content**: Summary rankings table, per-listing details, methodology — all in Notion Markdown (no embedded images; use external image URLs where available)
+
 ### Error Handling
 - **Missing photos**: Note "(photos unavailable)" in the listing card. Photos are building/listing images only — no ISP screenshots.
 - **Missing internet data**: Show "Internet check pending" instead of the summary
@@ -88,3 +103,4 @@ You read the collected listing data, photos, and Google Maps images, score each 
 - **Google Maps API failure**: Omit map/street view images, note in listing card
 - **HTML generation failure**: Report the error and suggest the user check the data files
 - **PDF generation failure**: Report the error and suggest the user check the data files
+- **Notion creation failure**: Report the error, still provide the HTML report as the primary output
