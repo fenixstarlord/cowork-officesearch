@@ -1,2 +1,4 @@
 data/.env
+data/output/
 __pycache__/
+.DS_Store

@@ -121,17 +121,17 @@ data/
 ```
 Stage 1: Search Listings
   Browser automation -> extract listing data + download photos
-  -> data/listings.json (or data/purchase-listings.json)
-  -> data/screenshots/{id}-1.jpg through {id}-4.jpg
+  -> data/output/listings.json (or data/output/purchase-listings.json)
+  -> data/output/screenshots/{id}-1.jpg through {id}-4.jpg
 
 Stage 2: Check Internet
   Read listings.json -> BroadbandNow lookups -> enrich with internet data
-  -> data/listings.json (updated with internet field)
+  -> data/output/listings.json (updated with internet field)
 
 Stage 3: Generate Report
   Read listings.json + screenshots/ + Google Maps API
-  -> data/screenshots/{id}-map.jpg, {id}-streetview.jpg
-  -> data/portland-apartment-report-YYYYMMDD-HHMM.html
+  -> data/output/screenshots/{id}-map.jpg, {id}-streetview.jpg
+  -> data/output/portland-apartment-report-YYYYMMDD-HHMM.html
 ```
 
 ## CAPTCHA Handling

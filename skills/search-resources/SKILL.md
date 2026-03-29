@@ -59,7 +59,7 @@ Step-by-step Chrome tool usage pattern for each listing site:
   thumbs.forEach(function(t) { if(t.src) urls.push(t.src.replace('_50x50c.jpg','_600x450.jpg')); });
   JSON.stringify(urls.slice(0,4))
   ```
-  Download each with `curl -s -o data/screenshots/{id}-{n}.jpg "{url}"` (n = 1-4). Do NOT rely on Chrome `save_to_disk` screenshots — they exist only in extension memory and never write to disk.
+  Download each with `curl -s -o data/output/screenshots/{id}-{n}.jpg "{url}"` (n = 1-4). Do NOT rely on Chrome `save_to_disk` screenshots — they exist only in extension memory and never write to disk.
 
 ### Chrome Extension Troubleshooting
 
@@ -92,7 +92,7 @@ Each listing should be stored as a JSON object following this structure:
   "description_excerpt": "...",
   "neighborhood": "Hosford-Abernethy",
   "listing_type": "residential",
-  "photo_paths": ["data/screenshots/zillow-12345-1.jpg", "data/screenshots/zillow-12345-2.jpg", "data/screenshots/zillow-12345-3.jpg", "data/screenshots/zillow-12345-4.jpg"],
+  "photo_paths": ["data/output/screenshots/zillow-12345-1.jpg", "data/output/screenshots/zillow-12345-2.jpg", "data/output/screenshots/zillow-12345-3.jpg", "data/output/screenshots/zillow-12345-4.jpg"],
   "internet": null
 }
 ```

@@ -491,8 +491,8 @@ def build_pdf(listings, output_path):
     print(f"PDF generated: {output_path}")
 
 if __name__ == "__main__":
-    with open("/Users/dit/github/cowork-aparmentsearch/data/listings.json") as f:
+    with open("/Users/dit/github/cowork-aparmentsearch/data/output/listings.json") as f:
         listings = json.load(f)
     timestamp = datetime.now().strftime("%Y%m%d-%H%M")
-    output_path = f"/Users/dit/github/cowork-aparmentsearch/data/portland-apartment-report-{timestamp}.pdf"
+    output_path = f"/Users/dit/github/cowork-aparmentsearch/data/output/portland-apartment-report-{timestamp}.pdf"
     build_pdf(listings, output_path)

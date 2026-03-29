@@ -14,7 +14,7 @@ All changes to the Portland Office Search plugin. Dates reflect the single-day d
 - Added `/purchase:generate-report` command for HTML report output
 - Created `purchase-search-resources` skill with for-sale site URLs (Zillow, Redfin, Realtor.com, Craigslist real estate, LoopNet, CommercialCafe) and purchase-specific JSON schema (adds `lot_sqft`, `year_built`, `property_type` fields)
 - Created `purchase-evaluation` skill with purchase-specific scoring rubric (price value, room count, sqft, location quality, mixed-use potential, fiber internet, property condition)
-- Purchase data stored in `data/purchase-listings.json` (separate from rental `data/listings.json`)
+- Purchase data stored in `data/output/purchase-listings.json` (separate from rental `data/output/listings.json`)
 - Purchase reports output to `data/portland-purchase-report-YYYYMMDD-HHMM.html`
 
 ### Target Area Expansion
@@ -49,7 +49,7 @@ All changes to the Portland Office Search plugin. Dates reflect the single-day d
 ### Distance Calculations
 - Added distance calculations from each listing to three key locations: Chris (SE 24th Ave), George (SW Lee St), Jasmine (SE Main St)
 - Distances displayed as badges in HTML report listing cards
-- Uses Google Geocoding API with disk-based cache (`data/screenshots/geocode_*.json`)
+- Uses Google Geocoding API with disk-based cache (`data/output/screenshots/geocode_*.json`)
 - Haversine formula for straight-line distance in miles
 
 ## 2026-03-27 — HTML Report Enhancements
@@ -64,7 +64,7 @@ All changes to the Portland Office Search plugin. Dates reflect the single-day d
 - Added Google Maps Static API images to each listing card (map with red marker)
 - Added Street View Static API images to each listing card
 - Google Maps API key stored in `data/.env` (gitignored)
-- Images downloaded via `curl` and cached to `data/screenshots/{id}-map.jpg` and `{id}-streetview.jpg`
+- Images downloaded via `curl` and cached to `data/output/screenshots/{id}-map.jpg` and `{id}-streetview.jpg`
 - Map images hyperlinked to Google Maps (opens in new tab)
 - Adjusted map zoom level from 15 to 13 for better neighborhood context
 
@@ -116,8 +116,8 @@ All changes to the Portland Office Search plugin. Dates reflect the single-day d
 - Created skills: `search-resources` (listing sites and strategies), `portland-geography` (neighborhoods and zip codes), `fiber-internet-check` (ISP lookup procedures), `listing-evaluation` (scoring rubric)
 - Created commands: `search-listings`, `check-internet`, `generate-report` (originally as `/apt:*`)
 - Created agents: `apartment-finder` (browser-driven listing scraper), `internet-checker` (ISP coverage lookups), `report-builder` (report compilation)
-- Data contract: `data/listings.json` as shared state between stages
-- Screenshots stored in `data/screenshots/` directory
+- Data contract: `data/output/listings.json` as shared state between stages
+- Screenshots stored in `data/output/screenshots/` directory
 - Initial report format: PDF via `data/generate_report.py` using reportlab
 - Target area: Inner SE Portland, Powell/Division corridors (Hosford-Abernethy, Richmond, Creston-Kenilworth, Brooklyn, Buckman)
 - Safety boundaries: read-only browsing, no account creation, no personal info submission, CAPTCHA handling via user interaction

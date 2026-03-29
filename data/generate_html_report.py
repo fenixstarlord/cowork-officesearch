@@ -10,7 +10,7 @@ import urllib.parse
 from datetime import datetime
 from pathlib import Path
 
-DATA_DIR = "/Users/dit/github/cowork-aparmentsearch/data"
+DATA_DIR = "/Users/dit/github/cowork-aparmentsearch/data/output"
 
 # Key locations for distance calculations
 KEY_LOCATIONS = [

@@ -1,5 +1,5 @@
 ---
-description: Check fiber internet availability for all listings in data/listings.json
+description: Check fiber internet availability for all listings in data/output/listings.json
 allowed-tools: mcp__Claude_in_Chrome__navigate, mcp__Claude_in_Chrome__find, mcp__Claude_in_Chrome__read_page, mcp__Claude_in_Chrome__computer, mcp__Claude_in_Chrome__form_input, mcp__Claude_in_Chrome__get_page_text, mcp__Claude_in_Chrome__tabs_context_mcp
 ---
 
@@ -8,14 +8,14 @@ allowed-tools: mcp__Claude_in_Chrome__navigate, mcp__Claude_in_Chrome__find, mcp
 Check fiber and broadband internet availability at the address of each listing found in Stage 1.
 
 ## Prerequisites
-- `data/listings.json` must exist (run `/rental:search-listings` first)
+- `data/output/listings.json` must exist (run `/rental:search-listings` first)
 
 ## Inputs
-None — reads addresses from `data/listings.json`
+None — reads addresses from `data/output/listings.json`
 
 ## Workflow
 
-1. Read `data/listings.json`. If missing, tell user: "No listings found. Please run `/rental:search-listings` first."
+1. Read `data/output/listings.json`. If missing, tell user: "No listings found. Please run `/rental:search-listings` first."
 2. Load the `fiber-internet-check` skill for ISP checker URLs and navigation procedures
 3. Filter to listings where `internet` is null (allows re-running to pick up where it left off)
 4. Open a Chrome tab if not already available
@@ -31,11 +31,11 @@ None — reads addresses from `data/listings.json`
    d. Classify internet suitability (Excellent/Good/Adequate/Poor) per `fiber-internet-check` skill
    e. Update the listing's `internet` field
 
-6. Write enriched data back to `data/listings.json`
+6. Write enriched data back to `data/output/listings.json`
 7. Report summary: "Checked X addresses. Fiber available at Y. Cable-only at Z. Failed checks: W."
 
 ## Expected Output
-- `data/listings.json` updated with internet data for each listing
+- `data/output/listings.json` updated with internet data for each listing
 - Chat summary with fiber availability counts
 - No ISP screenshots — internet data is text-only
 
