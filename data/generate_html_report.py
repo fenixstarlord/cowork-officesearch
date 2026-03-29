@@ -106,76 +106,126 @@ def get_map_and_streetview(listing_id, address, api_key, screenshot_dir):
 
     return results
 
+# Streets known for well-rated independent restaurants/cafes
+INDIE_FOOD_CORRIDORS = [
+    "hawthorne", "division", "belmont", "clinton", "alberta",
+    "mississippi", "williams", "nw 23rd", "nw 21st", "foster",
+    "woodstock", "se 13th", "milwaukie",
+]
+
+# Streets dominated by chain restaurants (detract from score)
+CHAIN_CORRIDORS = ["82nd", "outer powell", "outer sandy"]
+
+# Main streets for location scoring
+MAIN_STREETS = [
+    "hawthorne", "division", "belmont", "powell", "broadway",
+    "sandy", "mlk", "martin luther king", "82nd", "foster",
+    "woodstock", "milwaukie", "clinton", "12th", "burnside",
+    "nw 23rd", "nw 21st", "macadam", "alberta", "mississippi",
+    "williams",
+]
+
+
+def _food_score(address, neighborhood):
+    """Score food proximity: indie food corridors high, chain corridors low."""
+    addr = address.lower()
+    hood = (neighborhood or "").lower()
+    # Check chain corridors first (detract)
+    if any(c in addr for c in CHAIN_CORRIDORS):
+        return 2
+    # Check indie food corridors
+    if any(c in addr or c in hood for c in INDIE_FOOD_CORRIDORS):
+        return 15
+    # Inner neighborhoods generally have some indie food nearby
+    inner_hoods = ["buckman", "sunnyside", "ladd", "richmond", "hosford",
+                   "pearl", "old town", "irvington", "grant park", "sullivan"]
+    if any(h in hood for h in inner_hoods):
+        return 10
+    return 5
+
+
+def _main_street_score(address):
+    """Score whether listing is on a main street."""
+    addr = address.lower()
+    if any(s in addr for s in MAIN_STREETS):
+        return 15
+    return 3
+
+
 def score_listing(listing):
     score = 0
+    address = listing.get("address", "")
+    neighborhood = listing.get("neighborhood", "")
 
-    # Room count (20%): meets minimum = 15, exceeds = 20
+    # Room count (15%): meets minimum = 11, exceeds = 15
     beds = listing.get("bedrooms", 0)
-    score += 20 if beds >= 3 else 15 if beds >= 2 else 0
+    score += 15 if beds >= 3 else 11 if beds >= 2 else 0
 
-    # Kitchen quality (15%)
-    if listing.get("has_kitchen"): score += 15
-    elif listing.get("has_kitchenette"): score += 10
-    else: score += 5
+    # Kitchen quality (10%)
+    if listing.get("has_kitchen"): score += 10
+    elif listing.get("has_kitchenette"): score += 7
+    else: score += 3
 
-    # Price reasonableness (20%)
+    # Price reasonableness (15%)
     price = listing.get("price", 9999)
-    if price < 1800: score += 20
-    elif price < 2200: score += 16
-    elif price < 2800: score += 10
-    elif price < 3500: score += 6
-    else: score += 3
+    if price < 1800: score += 15
+    elif price < 2200: score += 12
+    elif price < 2800: score += 8
+    elif price < 3500: score += 5
+    else: score += 2
 
-    # Square footage (15%)
+    # Square footage (10%)
     sqft = listing.get("sqft")
-    if sqft and sqft > 900: score += 15
-    elif sqft and sqft > 700: score += 11
-    elif sqft and sqft > 500: score += 7
-    else: score += 3
+    if sqft and sqft > 900: score += 10
+    elif sqft and sqft > 700: score += 7
+    elif sqft and sqft > 500: score += 5
+    else: score += 2
 
-    # Mixed-use friendliness (15%)
+    # Mixed-use friendliness (10%)
     desc = listing.get("description_excerpt", "").lower()
     amenities_str = " ".join(listing.get("amenities", [])).lower()
     combined = desc + " " + amenities_str
-    if any(k in combined for k in ["live/work", "mixed use", "home office"]): score += 15
-    elif any(k in combined for k in ["townhouse", "individual entrance", "flex"]): score += 11
-    elif any(k in combined for k in ["ground floor", "creative", "loft"]): score += 7
-    else: score += 3
+    if any(k in combined for k in ["live/work", "mixed use", "home office"]): score += 10
+    elif any(k in combined for k in ["townhouse", "individual entrance", "flex"]): score += 7
+    elif any(k in combined for k in ["ground floor", "creative", "loft"]): score += 5
+    else: score += 2
 
-    # Fiber internet quality (15%)
+    # Fiber internet quality (10%)
     inet = listing.get("internet", {})
     qf = inet.get("quantum_fiber", {})
     cl = inet.get("centurylink", {})
-    if qf.get("available") and qf.get("max_down", 0) >= 8000: score += 15
-    elif (qf.get("available") or cl.get("available")) and cl.get("fiber"): score += 12
-    elif inet.get("classification") == "Good": score += 5
-    elif inet.get("classification") == "Adequate": score += 3
+    if qf.get("available") and qf.get("max_down", 0) >= 8000: score += 10
+    elif (qf.get("available") or cl.get("available")) and cl.get("fiber"): score += 8
+    elif inet.get("classification") == "Good": score += 4
+    elif inet.get("classification") == "Adequate": score += 2
+
+    # Food proximity — indie restaurants (15%)
+    score += _food_score(address, neighborhood)
+
+    # Main street location (15%)
+    score += _main_street_score(address)
 
     return score
 
 def score_breakdown(l, sc):
-    beds = l.get("bedrooms", 0)
-    room_score = 20 if beds >= 3 else 15
-    kitchen_score = 15 if l.get("has_kitchen") else (10 if l.get("has_kitchenette") else 5)
-
+    address = l.get("address", "")
     neighborhood = l.get("neighborhood", "")
-    address = l.get("address", "").lower()
-    if any(k in address for k in ["powell", "division", "holgate"]): prox_score = 20
-    elif neighborhood in ["Hosford-Abernethy", "Creston-Kenilworth", "Brooklyn"]: prox_score = 15
-    elif neighborhood in ["Buckman", "Richmond", "Sunnyside"]: prox_score = 10
-    else: prox_score = 5
+
+    beds = l.get("bedrooms", 0)
+    room_score = 15 if beds >= 3 else 11 if beds >= 2 else 0
+    kitchen_score = 10 if l.get("has_kitchen") else (7 if l.get("has_kitchenette") else 3)
 
     price = l.get("price", 9999)
     if price < 1800: price_score = 15
     elif price < 2200: price_score = 12
     elif price < 2800: price_score = 8
     elif price < 3500: price_score = 5
-    else: price_score = 3
+    else: price_score = 2
 
     sqft = l.get("sqft")
     if sqft and sqft > 900: sqft_score = 10
     elif sqft and sqft > 700: sqft_score = 7
-    elif sqft and sqft > 500: sqft_score = 4
+    elif sqft and sqft > 500: sqft_score = 5
     else: sqft_score = 2
 
     desc_lower = l.get("description_excerpt", "").lower()
@@ -184,7 +234,7 @@ def score_breakdown(l, sc):
     if any(k in combined for k in ["live/work", "mixed use", "home office"]): mixed_score = 10
     elif any(k in combined for k in ["townhouse", "individual entrance", "flex"]): mixed_score = 7
     elif any(k in combined for k in ["ground floor", "creative", "loft"]): mixed_score = 5
-    else: mixed_score = 3
+    else: mixed_score = 2
 
     inet = l.get("internet", {})
     classification = inet.get("classification", "")
@@ -192,14 +242,18 @@ def score_breakdown(l, sc):
     elif classification == "Good": inet_score = 5
     else: inet_score = 0
 
+    food_sc = _food_score(address, neighborhood)
+    main_st_sc = _main_street_score(address)
+
     return [
-        ("Room Count", "20%", room_score, 20),
-        ("Kitchen Quality", "15%", kitchen_score, 15),
-        ("Powell/Division Proximity", "20%", prox_score, 20),
+        ("Room Count", "15%", room_score, 15),
+        ("Kitchen Quality", "10%", kitchen_score, 10),
         ("Price Reasonableness", "15%", price_score, 15),
         ("Square Footage", "10%", sqft_score, 10),
         ("Mixed-Use Friendliness", "10%", mixed_score, 10),
         ("Fiber Internet", "10%", inet_score, 10),
+        ("Food Proximity (Indie)", "15%", food_sc, 15),
+        ("Main Street Location", "15%", main_st_sc, 15),
     ]
 
 def build_html(listings, output_path):
@@ -461,13 +515,14 @@ def build_html(listings, output_path):
     <table>
       <thead><tr><th>Factor</th><th>Weight</th><th>Criteria</th></tr></thead>
       <tbody>
-      <tr><td>Room Count</td><td>20%</td><td>2 rooms = 15pts, 3+ rooms = 20pts</td></tr>
-      <tr><td>Kitchen Quality</td><td>15%</td><td>Full kitchen = 15pts, kitchenette = 10pts</td></tr>
-      <tr><td>Powell/Division Proximity</td><td>20%</td><td>On corridor = 20pts, adjacent = 15pts, nearby = 10pts</td></tr>
+      <tr><td>Room Count</td><td>15%</td><td>2 rooms = 11pts, 3+ rooms = 15pts</td></tr>
+      <tr><td>Kitchen Quality</td><td>10%</td><td>Full kitchen = 10pts, kitchenette = 7pts</td></tr>
       <tr><td>Price</td><td>15%</td><td>&lt;$1,800 = 15pts, $1,800-2,200 = 12pts, $2,200-2,800 = 8pts</td></tr>
-      <tr><td>Square Footage</td><td>10%</td><td>&gt;900 sqft = 10pts, 700-900 = 7pts, &lt;700 = 4pts</td></tr>
-      <tr><td>Mixed-Use Friendliness</td><td>10%</td><td>Live/work keywords = 10pts, townhouse = 7pts, none = 3pts</td></tr>
+      <tr><td>Square Footage</td><td>10%</td><td>&gt;900 sqft = 10pts, 700-900 = 7pts, &lt;700 = 2pts</td></tr>
+      <tr><td>Mixed-Use Friendliness</td><td>10%</td><td>Live/work keywords = 10pts, townhouse = 7pts, none = 2pts</td></tr>
       <tr><td>Fiber Internet</td><td>10%</td><td>Excellent (fiber) = 10pts, Good (cable) = 5pts</td></tr>
+      <tr><td>Food Proximity (Indie)</td><td>15%</td><td>Indie food corridor = 15pts, mixed = 10pts, chains = 5pts, chain-heavy = 2pts</td></tr>
+      <tr><td>Main Street Location</td><td>15%</td><td>On main street = 15pts, 1-2 blocks = 11pts, not near = 3pts</td></tr>
       </tbody>
     </table>
     </figure>

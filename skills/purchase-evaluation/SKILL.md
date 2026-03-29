@@ -17,13 +17,39 @@ A listing MUST meet ALL of these to be included:
 
 | Factor | Weight | Scoring |
 |--------|--------|---------|
-| Price value | 20% | Under $400k = 20pts, $400-500k = 16pts, $500-600k = 12pts, $600-700k = 8pts |
-| Room count / size | 15% | 4+ rooms = 15pts, 3 rooms = 12pts, 2 rooms = 8pts |
-| Square footage | 15% | Over 1,500 sqft = 15pts, 1,000-1,500 = 12pts, 700-1,000 = 8pts, under 700 = 4pts |
-| Location quality | 15% | Walkable commercial corridor = 15pts, inner neighborhood = 12pts, outer neighborhood = 8pts |
-| Mixed-use potential | 15% | Already mixed-use/commercial = 15pts, duplex/multi-family = 12pts, house with separate entrance = 8pts, standard house = 4pts |
+| Price value | 15% | Under $400k = 15pts, $400-500k = 12pts, $500-600k = 9pts, $600-700k = 6pts |
+| Room count / size | 10% | 4+ rooms = 10pts, 3 rooms = 8pts, 2 rooms = 5pts |
+| Square footage | 10% | Over 1,500 sqft = 10pts, 1,000-1,500 = 8pts, 700-1,000 = 5pts, under 700 = 3pts |
+| Location quality | 10% | Walkable commercial corridor = 10pts, inner neighborhood = 8pts, outer neighborhood = 5pts |
+| Mixed-use potential | 10% | Already mixed-use/commercial = 10pts, duplex/multi-family = 8pts, house with separate entrance = 5pts, standard house = 3pts |
 | Fiber internet | 10% | Fiber confirmed = 10pts, gigabit cable = 5pts, cable only = 3pts, no data = 0pts |
-| Property condition | 10% | Move-in ready / recently renovated = 10pts, good condition = 7pts, needs work = 4pts, major renovation needed = 2pts |
+| Property condition | 5% | Move-in ready / recently renovated = 5pts, good condition = 4pts, needs work = 2pts, major renovation needed = 1pt |
+| Food proximity (indie) | 15% | Near indie food corridor = 15pts, mixed indie/chain = 10pts, mostly chains = 5pts, chain-heavy/no food = 2pts |
+| Main street location | 15% | On a main street = 15pts, 1-2 blocks away = 11pts, 3-5 blocks = 7pts, not near = 3pts |
+
+## Food Proximity
+
+Prioritize properties near **well-rated, independently owned** restaurants and cafes. Chain restaurants detract from the score.
+
+**Indie food corridors** (score highest):
+- SE Hawthorne Blvd, SE Division St, SE Belmont St, SE Clinton St
+- NE/N Alberta St, N Mississippi Ave, NE/N Williams Ave
+- NW 23rd Ave, NW 21st Ave
+- SE Foster Rd (Foster-Powell section), SE Woodstock Blvd
+- SE 13th Ave (Sellwood), SE Milwaukie Ave
+
+**Chain-heavy corridors** (score lowest):
+- SE 82nd Ave, outer SE Powell Blvd (east of 52nd), outer NE Sandy Blvd (east of Hollywood)
+
+## Main Streets
+
+Properties on or near these streets score higher:
+
+- SE Hawthorne Blvd, SE Division St, SE Belmont St, SE Powell Blvd
+- SE Clinton St, SE Foster Rd, SE Woodstock Blvd, SE Milwaukie Ave
+- NE/SE Broadway, NE/SE Sandy Blvd, NE/SE MLK Jr Blvd, SE 12th Ave
+- W/E Burnside St, NW 23rd Ave, NW 21st Ave, SW Macadam Ave
+- NE/N Alberta St, N Mississippi Ave, NE/N Williams Ave
 
 ## Property Type Classification
 

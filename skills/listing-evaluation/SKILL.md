@@ -17,12 +17,38 @@ A listing MUST meet ALL of these to be included:
 
 | Factor | Weight | Scoring |
 |--------|--------|---------|
-| Room count | 20% | Meets minimum = 15pts, exceeds by 1+ = 20pts |
-| Kitchen quality | 15% | Full kitchen = 15pts, kitchenette = 10pts, unclear = 5pts |
-| Price reasonableness | 20% | Under $1,800 = 20pts, $1,800-2,200 = 16pts, $2,200-2,800 = 10pts, $2,800-3,500 = 6pts, over $3,500 = 3pts |
-| Square footage | 15% | Over 900 sqft = 15pts, 700-900 = 11pts, 500-700 = 7pts, under 500 = 3pts |
-| Mixed-use friendliness | 15% | Explicit "live/work" or "home office" = 15pts, ground floor commercial = 11pts, "flex space" / townhouse = 7pts, no mention = 3pts |
-| Fiber internet quality | 15% | Fiber 8Gbps = 15pts, Fiber 940Mbps = 12pts, gigabit cable only = 5pts, cable only = 3pts, no data = 0pts |
+| Room count | 15% | Meets minimum = 11pts, exceeds by 1+ = 15pts |
+| Kitchen quality | 10% | Full kitchen = 10pts, kitchenette = 7pts, unclear = 3pts |
+| Price reasonableness | 15% | Under $1,800 = 15pts, $1,800-2,200 = 12pts, $2,200-2,800 = 8pts, $2,800-3,500 = 5pts, over $3,500 = 2pts |
+| Square footage | 10% | Over 900 sqft = 10pts, 700-900 = 7pts, 500-700 = 5pts, under 500 = 2pts |
+| Mixed-use friendliness | 10% | Explicit "live/work" or "home office" = 10pts, ground floor commercial = 7pts, "flex space" / townhouse = 5pts, no mention = 2pts |
+| Fiber internet quality | 10% | Fiber 8Gbps = 10pts, Fiber 940Mbps = 8pts, gigabit cable only = 4pts, cable only = 2pts, no data = 0pts |
+| Food proximity (indie) | 15% | Near indie food corridor = 15pts, mixed indie/chain = 10pts, mostly chains = 5pts, chain-heavy/no food = 2pts |
+| Main street location | 15% | On a main street = 15pts, 1-2 blocks away = 11pts, 3-5 blocks = 7pts, not near = 3pts |
+
+## Food Proximity
+
+Prioritize listings near **well-rated, independently owned** restaurants and cafes. Chain restaurants detract from the score.
+
+**Indie food corridors** (score highest):
+- SE Hawthorne Blvd, SE Division St, SE Belmont St, SE Clinton St
+- NE/N Alberta St, N Mississippi Ave, NE/N Williams Ave
+- NW 23rd Ave, NW 21st Ave
+- SE Foster Rd (Foster-Powell section), SE Woodstock Blvd
+- SE 13th Ave (Sellwood), SE Milwaukie Ave
+
+**Chain-heavy corridors** (score lowest):
+- SE 82nd Ave, outer SE Powell Blvd (east of 52nd), outer NE Sandy Blvd (east of Hollywood)
+
+## Main Streets
+
+Listings on or near these streets score higher:
+
+- SE Hawthorne Blvd, SE Division St, SE Belmont St, SE Powell Blvd
+- SE Clinton St, SE Foster Rd, SE Woodstock Blvd, SE Milwaukie Ave
+- NE/SE Broadway, NE/SE Sandy Blvd, NE/SE MLK Jr Blvd, SE 12th Ave
+- W/E Burnside St, NW 23rd Ave, NW 21st Ave, SW Macadam Ave
+- NE/N Alberta St, N Mississippi Ave, NE/N Williams Ave
 
 ## Key Locations for Distance Calculation
 
