@@ -31,5 +31,9 @@
     "include_hipness_score": true,
     "include_safety_score": true,
     "show_rejected_listings": false
+  },
+  "notion": {
+    "data_source_id": "1df03407-763c-8098-81b8-000b500508b8",
+    "category": ["Planning"]
   }
 }

@@ -10,14 +10,25 @@ import urllib.parse
 from datetime import datetime
 from pathlib import Path
 
-DATA_DIR = "/Users/dit/github/cowork-aparmentsearch/data/output"
+DATA_DIR = os.path.join(os.path.dirname(os.path.abspath(__file__)), "output")
 
-# Key locations for distance calculations
-KEY_LOCATIONS = [
+# Key locations for distance calculations — loaded from config at runtime, with fallback defaults
+CONFIG_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), "config.json")
+_DEFAULT_KEY_LOCATIONS = [
     {"name": "Chris", "address": "10363 SE 24th Ave, Portland, OR", "lat": 45.4338, "lon": -122.6370},
     {"name": "George", "address": "3816 SW Lee St, Portland, OR 97221", "lat": 45.4885, "lon": -122.7148},
     {"name": "Jasmine", "address": "3521 SE Main St, Portland, OR 97214", "lat": 45.5122, "lon": -122.6293},
 ]
+
+def _load_key_locations():
+    try:
+        with open(CONFIG_PATH) as f:
+            config = json.load(f)
+        return config.get("key_locations", _DEFAULT_KEY_LOCATIONS)
+    except (FileNotFoundError, json.JSONDecodeError):
+        return _DEFAULT_KEY_LOCATIONS
+
+KEY_LOCATIONS = _load_key_locations()
 
 def haversine_miles(lat1, lon1, lat2, lon2):
     """Calculate distance in miles between two lat/lon points."""
@@ -127,7 +138,7 @@ MAIN_STREETS = [
 
 
 def _food_score(address, neighborhood):
-    """Score food proximity: indie food corridors high, chain corridors low."""
+    """Score food proximity (12%): indie food corridors high, chain corridors low."""
     addr = address.lower()
     hood = (neighborhood or "").lower()
     # Check chain corridors first (detract)
@@ -135,75 +146,92 @@ def _food_score(address, neighborhood):
         return 2
     # Check indie food corridors
     if any(c in addr or c in hood for c in INDIE_FOOD_CORRIDORS):
-        return 15
+        return 12
     # Inner neighborhoods generally have some indie food nearby
     inner_hoods = ["buckman", "sunnyside", "ladd", "richmond", "hosford",
-                   "pearl", "old town", "irvington", "grant park", "sullivan"]
+                   "pearl", "old town", "irvington", "grant park", "sullivan",
+                   "eliot", "boise", "king", "hawthorne", "belmont"]
     if any(h in hood for h in inner_hoods):
-        return 10
-    return 5
+        return 8
+    return 4
 
 
 def _main_street_score(address):
-    """Score whether listing is on a main street."""
+    """Score whether listing is on a main street (10%)."""
     addr = address.lower()
     if any(s in addr for s in MAIN_STREETS):
-        return 15
-    return 3
+        return 10
+    return 2
 
 
 def score_listing(listing):
+    """Score a rental listing on 0-100 scale per listing-evaluation rubric."""
     score = 0
     address = listing.get("address", "")
     neighborhood = listing.get("neighborhood", "")
 
-    # Room count (15%): meets minimum = 11, exceeds = 15
+    # Room count (12%): meets minimum = 9, exceeds = 12
     beds = listing.get("bedrooms", 0)
-    score += 15 if beds >= 3 else 11 if beds >= 2 else 0
+    score += 12 if beds >= 3 else 9 if beds >= 2 else 0
 
-    # Kitchen quality (10%)
-    if listing.get("has_kitchen"): score += 10
-    elif listing.get("has_kitchenette"): score += 7
-    else: score += 3
+    # Kitchen quality (8%)
+    if listing.get("has_kitchen"): score += 8
+    elif listing.get("has_kitchenette"): score += 5
+    else: score += 2
 
-    # Price reasonableness (15%)
+    # Price reasonableness (14%)
     price = listing.get("price", 9999)
-    if price < 1800: score += 15
-    elif price < 2200: score += 12
-    elif price < 2800: score += 8
-    elif price < 3500: score += 5
+    if price < 1800: score += 14
+    elif price < 2200: score += 11
+    elif price < 2800: score += 7
+    elif price < 3500: score += 4
     else: score += 2
 
-    # Square footage (10%)
+    # Square footage (8%)
     sqft = listing.get("sqft")
-    if sqft and sqft > 900: score += 10
-    elif sqft and sqft > 700: score += 7
-    elif sqft and sqft > 500: score += 5
+    if sqft and sqft > 900: score += 8
+    elif sqft and sqft > 700: score += 6
+    elif sqft and sqft > 500: score += 4
     else: score += 2
 
-    # Mixed-use friendliness (10%)
+    # Mixed-use friendliness (8%)
     desc = listing.get("description_excerpt", "").lower()
     amenities_str = " ".join(listing.get("amenities", [])).lower()
     combined = desc + " " + amenities_str
-    if any(k in combined for k in ["live/work", "mixed use", "home office"]): score += 10
-    elif any(k in combined for k in ["townhouse", "individual entrance", "flex"]): score += 7
-    elif any(k in combined for k in ["ground floor", "creative", "loft"]): score += 5
+    if any(k in combined for k in ["live/work", "mixed use", "home office"]): score += 8
+    elif any(k in combined for k in ["ground floor", "commercial"]): score += 6
+    elif any(k in combined for k in ["townhouse", "flex", "creative", "loft"]): score += 4
     else: score += 2
 
     # Fiber internet quality (10%)
-    inet = listing.get("internet", {})
-    qf = inet.get("quantum_fiber", {})
-    cl = inet.get("centurylink", {})
-    if qf.get("available") and qf.get("max_down", 0) >= 8000: score += 10
-    elif (qf.get("available") or cl.get("available")) and cl.get("fiber"): score += 8
-    elif inet.get("classification") == "Good": score += 4
-    elif inet.get("classification") == "Adequate": score += 2
+    inet = listing.get("internet") or {}
+    classification = inet.get("classification", "")
+    if classification == "Excellent": score += 10
+    elif classification == "Good": score += 4
+    elif classification == "Adequate": score += 2
+    # Poor/Unknown: 0
 
-    # Food proximity — indie restaurants (15%)
+    # Food proximity — indie restaurants (12%)
     score += _food_score(address, neighborhood)
 
-    # Main street location (15%)
+    # Main street location (10%)
     score += _main_street_score(address)
+
+    # Hipness score (9%)
+    hipness = listing.get("hipness_score")
+    if hipness and hipness >= 85: score += 9
+    elif hipness and hipness >= 70: score += 7
+    elif hipness and hipness >= 55: score += 5
+    elif hipness and hipness >= 40: score += 3
+    elif hipness: score += 1
+
+    # Safety score (9%)
+    safety = listing.get("safety_score")
+    if safety and safety >= 80: score += 9
+    elif safety and safety >= 65: score += 7
+    elif safety and safety >= 50: score += 5
+    elif safety and safety >= 35: score += 3
+    elif safety: score += 1
 
     return score
 
@@ -419,15 +447,17 @@ def build_html(listings, output_path):
 """
 
     for i, (sc, l) in enumerate(scored, 1):
-        inet_class = l["internet"]["classification"].lower()
+        inet = l.get("internet") or {}
+        inet_class = inet.get("classification", "Unknown").lower()
+        inet_label = inet.get("classification", "Unknown")
         listing_anchor = f"listing-{l['id']}"
         html += f"""    <tr>
       <td>{i}</td>
-      <td><a href="#{listing_anchor}" class="summary-link">{l["address"].split(",")[0]}</a></td>
-      <td>{l["neighborhood"]}</td>
-      <td>${l["price"]:,}</td>
-      <td>{l["bedrooms"]}BR/{l["bathrooms"]}BA</td>
-      <td><span class="internet-badge {inet_class}">{l["internet"]["classification"]}</span></td>
+      <td><a href="#{listing_anchor}" class="summary-link">{l.get("address", "Unknown").split(",")[0]}</a></td>
+      <td>{l.get("neighborhood", "")}</td>
+      <td>${l.get("price", 0):,}</td>
+      <td>{l.get("bedrooms", 0)}BR/{l.get("bathrooms", 0)}BA</td>
+      <td><span class="internet-badge {inet_class}">{inet_label}</span></td>
       <td><strong>{sc}/100</strong></td>
     </tr>\n"""
 
@@ -436,7 +466,7 @@ def build_html(listings, output_path):
     for rank, (sc, l) in enumerate(scored, 1):
         # Gather photos
         photos = []
-        for i in range(1, 5):
+        for i in range(1, 9):
             p = os.path.join(screenshot_dir, f"{l['id']}-{i}.jpg")
             b64 = img_to_base64(p)
             if b64:

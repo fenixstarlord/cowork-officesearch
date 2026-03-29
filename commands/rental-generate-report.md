@@ -80,7 +80,7 @@ None — reads from `data/output/listings.json` and `data/output/screenshots/`
 9. **Ask about Notion**: After the report is generated, ask the user:
    > "Would you like me to create this report as a Notion document in the Document Hub?"
 
-   If yes, create a page in the Document Hub database (data source `collection://1df03407-763c-8098-81b8-000b500508b8`) using the `notion-create-pages` tool:
+   If yes, create a page in the Document Hub database (data source from `data/config.json` `notion.data_source_id`) using the `notion-create-pages` tool:
    - **Doc name**: "Portland Office/Apartment Search Report — {Month} {Year}"
    - **Category**: `["Planning"]`
    - **Content**: Convert the report into Notion-flavored Markdown — summary rankings table, per-listing details (address, price, beds/baths, sqft, neighborhood, internet classification, score), and methodology section

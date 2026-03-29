@@ -26,85 +26,88 @@ BLACK = HexColor("#000000")
 GRAY = HexColor("#6c757d")
 
 def score_listing(listing):
-    """Score a listing 0-100 based on the evaluation rubric."""
+    """Score a rental listing on 0-100 scale per listing-evaluation rubric."""
     score = 0
-
-    # Room count (20%): 2 rooms = 15pts, 3+ rooms = 20pts
-    beds = listing.get("bedrooms", 0)
-    if beds >= 3:
-        score += 20
-    elif beds >= 2:
-        score += 15
-
-    # Kitchen quality (15%): Full kitchen = 15pts, kitchenette = 10pts
-    if listing.get("has_kitchen"):
-        score += 15
-    elif listing.get("has_kitchenette"):
-        score += 10
-    else:
-        score += 5
-
-    # Powell/Division proximity (20%)
-    neighborhood = listing.get("neighborhood", "")
     address = listing.get("address", "").lower()
-    # Close to Powell/Division corridors
-    if any(k in address for k in ["powell", "division", "holgate"]):
-        score += 20
-    elif neighborhood in ["Hosford-Abernethy", "Creston-Kenilworth", "Brooklyn"]:
-        score += 15
-    elif neighborhood in ["Buckman", "Richmond", "Sunnyside"]:
-        score += 10
-    else:
-        score += 5
+    neighborhood = listing.get("neighborhood", "").lower()
 
-    # Price reasonableness (15%)
-    price = listing.get("price", 9999)
-    if price < 1800:
-        score += 15
-    elif price < 2200:
-        score += 12
-    elif price < 2800:
+    # Room count (12%)
+    beds = listing.get("bedrooms", 0)
+    score += 12 if beds >= 3 else 9 if beds >= 2 else 0
+
+    # Kitchen quality (8%)
+    if listing.get("has_kitchen"):
         score += 8
-    elif price < 3500:
+    elif listing.get("has_kitchenette"):
         score += 5
     else:
-        score += 3
+        score += 2
 
-    # Square footage (10%)
+    # Price reasonableness (14%)
+    price = listing.get("price", 9999)
+    if price < 1800: score += 14
+    elif price < 2200: score += 11
+    elif price < 2800: score += 7
+    elif price < 3500: score += 4
+    else: score += 2
+
+    # Square footage (8%)
     sqft = listing.get("sqft")
-    if sqft and sqft > 900:
-        score += 10
-    elif sqft and sqft > 700:
-        score += 7
-    elif sqft and sqft > 500:
-        score += 4
-    else:
-        score += 2  # Unknown sqft gets minimal score
+    if sqft and sqft > 900: score += 8
+    elif sqft and sqft > 700: score += 6
+    elif sqft and sqft > 500: score += 4
+    else: score += 2
 
-    # Mixed-use friendliness (10%)
+    # Mixed-use friendliness (8%)
     desc = listing.get("description_excerpt", "").lower()
     amenities_str = " ".join(listing.get("amenities", [])).lower()
     combined = desc + " " + amenities_str
-    if any(k in combined for k in ["live/work", "mixed use", "home office", "commercial"]):
-        score += 10
-    elif any(k in combined for k in ["townhouse", "individual entrance", "flex"]):
-        score += 7
-    elif any(k in combined for k in ["ground floor", "creative", "loft"]):
-        score += 5
-    else:
-        score += 3
+    if any(k in combined for k in ["live/work", "mixed use", "home office"]): score += 8
+    elif any(k in combined for k in ["ground floor", "commercial"]): score += 6
+    elif any(k in combined for k in ["townhouse", "flex", "creative", "loft"]): score += 4
+    else: score += 2
 
-    # Fiber internet (10%)
-    internet = listing.get("internet", {})
+    # Fiber internet quality (10%)
+    internet = listing.get("internet") or {}
     classification = internet.get("classification", "")
-    if classification == "Excellent":
-        score += 10
-    elif classification == "Good":
-        score += 5
-    elif classification == "Adequate":
-        score += 3
-    else:
-        score += 0
+    if classification == "Excellent": score += 10
+    elif classification == "Good": score += 4
+    elif classification == "Adequate": score += 2
+
+    # Food proximity — indie restaurants (12%)
+    indie_corridors = ["hawthorne", "division", "belmont", "clinton", "alberta",
+                       "mississippi", "williams", "nw 23rd", "nw 21st", "foster",
+                       "woodstock", "sellwood", "milwaukie"]
+    chain_corridors = ["82nd", "outer powell", "outer sandy"]
+    if any(c in address for c in chain_corridors): score += 2
+    elif any(c in address or c in neighborhood for c in indie_corridors): score += 12
+    elif any(h in neighborhood for h in ["buckman", "sunnyside", "ladd", "richmond",
+            "hosford", "pearl", "irvington", "eliot", "boise"]): score += 8
+    else: score += 4
+
+    # Main street location (10%)
+    main_streets = ["hawthorne", "division", "belmont", "powell", "broadway",
+                    "sandy", "mlk", "foster", "woodstock", "milwaukie",
+                    "clinton", "burnside", "nw 23rd", "nw 21st", "macadam",
+                    "alberta", "mississippi", "williams"]
+    if any(s in address for s in main_streets): score += 10
+    else: score += 2
+
+    # Hipness score (9%)
+    hipness = listing.get("hipness_score")
+    if hipness and hipness >= 85: score += 9
+    elif hipness and hipness >= 70: score += 7
+    elif hipness and hipness >= 55: score += 5
+    elif hipness and hipness >= 40: score += 3
+    elif hipness: score += 1
+
+    # Safety score (9%)
+    safety = listing.get("safety_score")
+    if safety and safety >= 80: score += 9
+    elif safety and safety >= 65: score += 7
+    elif safety and safety >= 50: score += 5
+    elif safety and safety >= 35: score += 3
+    elif safety: score += 1
 
     return score
 
@@ -491,8 +494,9 @@ def build_pdf(listings, output_path):
     print(f"PDF generated: {output_path}")
 
 if __name__ == "__main__":
-    with open("/Users/dit/github/cowork-aparmentsearch/data/output/listings.json") as f:
+    data_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), "output")
+    with open(os.path.join(data_dir, "listings.json")) as f:
         listings = json.load(f)
     timestamp = datetime.now().strftime("%Y%m%d-%H%M")
-    output_path = f"/Users/dit/github/cowork-aparmentsearch/data/output/portland-apartment-report-{timestamp}.pdf"
+    output_path = os.path.join(data_dir, f"portland-apartment-report-{timestamp}.pdf")
     build_pdf(listings, output_path)

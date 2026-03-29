@@ -112,7 +112,7 @@ After generating the HTML report, ask the user:
 If yes:
 1. Convert the report content to Notion-flavored Markdown (fetch `notion://docs/enhanced-markdown-spec` first for syntax reference)
 2. Create a page in the Document Hub database using `notion-create-pages`:
-   - **Parent**: `{"type": "data_source_id", "data_source_id": "1df03407-763c-8098-81b8-000b500508b8"}`
+   - **Parent**: `{"type": "data_source_id", "data_source_id": "<read from data/config.json notion.data_source_id>"}`
    - **Doc name**: "Portland Office/Apartment Search Report — {Month} {Year}" (rental) or "Portland Properties For Sale Report — {Month} {Year}" (purchase)
    - **Category**: `["Planning"]`
    - **Content**: Summary rankings table, per-listing details, methodology — all in Notion Markdown (no embedded images; use external image URLs where available)
