@@ -31,8 +31,8 @@ Confirm the parsed criteria:
 1. Load the `search-resources` skill for site URLs and strategies
 2. Load the `portland-geography` skill for neighborhoods and zip codes
 3. Open a Chrome tab
-4. Create `data/screenshots/` directory if needed
-5. Initialize empty `data/listings.json` array
+4. Create `data/output/screenshots/` directory if needed
+5. Initialize empty `data/output/listings.json` array
 
 6. **Translate criteria to site-specific filters:**
    - **Craigslist**: URL params (`min_bedrooms`, `max_price`, `min_sqft`, `postal`, `search_distance`)
@@ -50,7 +50,7 @@ Confirm the parsed criteria:
 
 8. **If user wants mixed-use**, also search LoopNet, CommercialCafe, Craigslist commercial
 
-9. Write listings to `data/listings.json`
+9. Write listings to `data/output/listings.json`
 10. Report summary to user
 
 ## Craigslist URL Parameter Reference

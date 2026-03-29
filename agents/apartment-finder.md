@@ -58,7 +58,7 @@ You receive:
      thumbs.forEach(function(t) { if(t.src) urls.push(t.src.replace('_50x50c.jpg','_600x450.jpg')); });
      JSON.stringify(urls.slice(0,4))
      ```
-   - Download each to `data/screenshots/{id}-1.jpg` through `{id}-4.jpg` using Bash `curl`
+   - Download each to `data/output/screenshots/{id}-1.jpg` through `{id}-4.jpg` using Bash `curl`
    - Do NOT rely on Chrome `save_to_disk` screenshots — they exist only in extension memory and never write to disk
 6. **Build listing JSON object** matching the schema:
    ```json
@@ -77,7 +77,7 @@ You receive:
      "description_excerpt": "first 200 chars of description",
      "neighborhood": "best guess from address/zip",
      "listing_type": "residential" or "commercial" or "mixed-use",
-     "photo_paths": ["data/screenshots/{id}-1.jpg", "data/screenshots/{id}-2.jpg", "data/screenshots/{id}-3.jpg", "data/screenshots/{id}-4.jpg"],
+     "photo_paths": ["data/output/screenshots/{id}-1.jpg", "data/output/screenshots/{id}-2.jpg", "data/output/screenshots/{id}-3.jpg", "data/output/screenshots/{id}-4.jpg"],
      "internet": null
    }
    ```

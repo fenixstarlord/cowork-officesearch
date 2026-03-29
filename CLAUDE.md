@@ -23,14 +23,14 @@ Each stage can be run independently. Stage 2 requires Stage 1 output. Stage 3 re
 ## Data Flow
 
 ### Rental Pipeline
-- `data/listings.json` — Rental listing objects
-- `data/screenshots/` — Listing photos (`{id}-1.jpg` through `{id}-4.jpg`), Google Maps images (`{id}-map.jpg`, `{id}-streetview.jpg`)
-- `data/portland-apartment-report-YYYYMMDD-HHMM.html` — Rental report output
+- `data/output/listings.json` — Rental listing objects
+- `data/output/screenshots/` — Listing photos (`{id}-1.jpg` through `{id}-4.jpg`), Google Maps images (`{id}-map.jpg`, `{id}-streetview.jpg`)
+- `data/output/portland-apartment-report-YYYYMMDD-HHMM.html` — Rental report output
 
 ### Purchase Pipeline
-- `data/purchase-listings.json` — Purchase listing objects
-- `data/screenshots/` — Shared photo directory (same naming convention)
-- `data/portland-purchase-report-YYYYMMDD-HHMM.html` — Purchase report output
+- `data/output/purchase-listings.json` — Purchase listing objects
+- `data/output/screenshots/` — Shared photo directory (same naming convention)
+- `data/output/portland-purchase-report-YYYYMMDD-HHMM.html` — Purchase report output
 
 ### Shared
 - `data/.env` — Google Maps API key (gitignored)
@@ -106,5 +106,5 @@ Since Chrome is a visible browser window the user can interact with:
 | `agents/internet-checker.md` | Sub-agent: ISP coverage lookups |
 | `agents/report-builder.md` | Sub-agent: HTML/PDF report compilation |
 | **Data** | |
-| `data/listings.json` | Rental listings (runtime) |
-| `data/purchase-listings.json` | Purchase listings (runtime) |
+| `data/output/listings.json` | Rental listings (runtime, gitignored) |
+| `data/output/purchase-listings.json` | Purchase listings (runtime, gitignored) |

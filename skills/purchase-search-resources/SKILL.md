@@ -53,7 +53,7 @@ description: "Use this skill when searching for houses or buildings for sale in 
   "description_excerpt": "...",
   "neighborhood": "Hosford-Abernethy",
   "listing_type": "residential",
-  "photo_paths": ["data/screenshots/zillow-12345-1.jpg", "..."],
+  "photo_paths": ["data/output/screenshots/zillow-12345-1.jpg", "..."],
   "internet": null
 }
 ```

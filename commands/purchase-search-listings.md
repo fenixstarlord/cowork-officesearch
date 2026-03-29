@@ -17,8 +17,8 @@ Search residential and commercial listing sites for properties for sale in Portl
 1. Load the `purchase-search-resources` skill for sale listing site URLs and strategies
 2. Load the `portland-geography` skill for target neighborhoods and zip codes
 3. Open a Chrome tab via `tabs_context_mcp` / `tabs_create_mcp`
-4. Create `data/screenshots/` directory if it doesn't exist
-5. Initialize empty `data/purchase-listings.json` array
+4. Create `data/output/screenshots/` directory if it doesn't exist
+5. Initialize empty `data/output/purchase-listings.json` array
 
 6. **For each residential sale site** (Zillow, Redfin, Realtor.com):
    a. Navigate to the site's Portland for-sale URL
@@ -41,12 +41,12 @@ Search residential and commercial listing sites for properties for sale in Portl
    c. Extract listings following the same pattern
    d. Set `listing_type` to "commercial" or "mixed-use"
 
-8. Write the complete listings array to `data/purchase-listings.json`
+8. Write the complete listings array to `data/output/purchase-listings.json`
 9. Report summary to user: "Found X properties for sale across Y sites (Z residential, W commercial)"
 
 ## Expected Output
-- `data/purchase-listings.json` populated with listing objects (internet field set to null)
-- Photos saved in `data/screenshots/`
+- `data/output/purchase-listings.json` populated with listing objects (internet field set to null)
+- Photos saved in `data/output/screenshots/`
 - Chat summary with counts
 
 ## CAPTCHA Handling
