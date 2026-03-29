@@ -59,7 +59,7 @@ def get_distances(address, api_key):
     ]
 
 def load_api_key():
-    env_path = os.path.join(DATA_DIR, ".env")
+    env_path = os.path.join(DATA_DIR, "..", ".env")
     if os.path.exists(env_path):
         with open(env_path) as f:
             for line in f:
