@@ -1,6 +1,7 @@
 ---
 name: portland-geography
 description: "Use this skill for Portland OR geographic context: target neighborhoods spanning central Portland (both sides of the river), zip codes, key commercial corridors, and walkability/transit notes relevant to apartment and office space search."
+user-invocable: false
 ---
 
 ## Target Area

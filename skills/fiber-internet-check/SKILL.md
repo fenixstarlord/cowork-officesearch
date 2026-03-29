@@ -1,6 +1,7 @@
 ---
 name: fiber-internet-check
 description: "Use this skill when checking fiber or broadband internet availability at a specific Portland address. BroadbandNow is the primary checker (aggregates all providers in one lookup). Direct ISP sites are fallbacks only if BroadbandNow fails. Includes tested browser navigation patterns."
+user-invocable: false
 ---
 
 ## Provider Priority Order

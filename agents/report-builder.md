@@ -28,7 +28,7 @@ You read the collected listing data, photos, and Google Maps images, score each 
 
 ### Process
 
-1. **Read and validate** `data/output/listings.json`
+1. **Read and validate** the listings file (`data/output/listings.json` for rental, `data/output/purchase-listings.json` for purchase)
    - Count total listings, listings with internet data, listings missing data
    - Flag any incomplete listings
 
@@ -44,10 +44,10 @@ You read the collected listing data, photos, and Google Maps images, score each 
 5. **Build HTML report** (primary format) using `Write` tool. Use **Pico CSS v2** (`https://cdn.jsdelivr.net/npm/@picocss/pico@2/css/pico.min.css`) as the component library. Structure HTML with semantic elements (`<article>`, `<section>`, `<header>`, `<footer>`, `<figure>`) to leverage Pico's classless styling. Add custom CSS only for report-specific components (gallery grid, lightbox, score bars, internet badges, distance badges):
 
    **Cover Section:**
-   - Gradient header: "Portland Inner SE — Apartment & Office Space Report"
+   - Gradient header: "Portland — Apartment & Office Space Report" (rental) or "Portland Property Purchase — Live/Work Space Report" (purchase)
    - Date: current date
-   - Parameters: Inner SE Portland, 2+ rooms, bathroom, kitchenette, fiber preferred
-   - Summary stats: X listings found, Y with fiber, Z commercial/mixed-use
+   - Parameters: search criteria used, target area, requirements
+   - Summary stats: X listings found (Y after deduplication), Z with fiber, W commercial/mixed-use
 
    **Favorites Summary** (if `reviewed.json` has favorites):
    - List all favorited listings with links to their detail cards
@@ -93,13 +93,15 @@ You read the collected listing data, photos, and Google Maps images, score each 
    **Methodology Section:**
    - Data sources, scoring rubric, internet classification criteria
 
-6. **Save HTML** to `data/output/portland-apartment-report-YYYYMMDD-HHMM.html` (timestamped filename)
+6. **Save HTML** to timestamped file:
+   - Rental: `data/output/portland-apartment-report-YYYYMMDD-HHMM.html`
+   - Purchase: `data/output/portland-purchase-report-YYYYMMDD-HHMM.html`
 
-7. **Alternative: Generate PDF** if user requests, using `anthropic-skills:pdf` skill. PDF also includes photo galleries. Save to `data/output/portland-apartment-report.pdf`.
+7. **Alternative: Generate PDF** if user requests, using `anthropic-skills:pdf` skill. PDF also includes photo galleries.
 
 ### Output
-- HTML file at `data/output/portland-apartment-report-YYYYMMDD-HHMM.html` (primary)
-- PDF file at `data/output/portland-apartment-report.pdf` (alternative, if requested)
+- HTML file at timestamped path (primary)
+- PDF file (alternative, if requested)
 - Chat message: "Report generated with X listings. Top recommendations: [top 3 addresses with scores]"
 
 ### Notion Integration

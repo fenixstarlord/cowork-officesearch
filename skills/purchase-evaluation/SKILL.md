@@ -1,6 +1,7 @@
 ---
 name: purchase-evaluation
-description: "Use this skill to evaluate and score properties for sale against purchase criteria: under $700k, suitable for live/work use, central Portland location, fiber internet availability."
+description: "Use this skill to evaluate and score properties for sale against purchase criteria: under $700k, suitable for live/work use, central Portland location, with hipness and safety scoring."
+user-invocable: false
 ---
 
 ## Mandatory Requirements (Must-Have)

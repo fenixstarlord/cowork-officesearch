@@ -1,6 +1,7 @@
 ---
 name: deduplication
 description: "Use this skill to detect and merge duplicate listings that appear across multiple listing sites. Normalizes addresses and compares key fields to identify the same property listed on Zillow, Redfin, Craigslist, etc."
+user-invocable: false
 ---
 
 ## Overview

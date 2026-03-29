@@ -62,11 +62,11 @@ This plugin uses browser automation — no custom MCP server:
 ## Safety Boundaries
 
 1. **Never submit personal information** to any listing or ISP site
-2. **Never create accounts** on any website
-3. **Read-only browsing only** — no form submissions except anonymous ISP address lookups (coverage checkers)
+2. **Never create accounts** on any website — for sites requiring login (Facebook Marketplace, Nextdoor), ask the user to log in themselves in the browser window before searching
+3. **Read-only browsing only** — no form submissions except anonymous ISP address lookups (coverage checkers) and anonymous search filters
 4. **Never download files** from listing sites without user permission
 5. **Always ask user** before taking any action beyond reading a web page
-6. **Respect rate limits** — wait between requests to the same site
+6. **Respect rate limits** — wait between requests to the same site; fall back to sequential mode if parallel checks trigger rate limiting
 
 ## Error Handling
 

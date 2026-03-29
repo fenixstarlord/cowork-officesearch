@@ -1,6 +1,7 @@
 ---
 name: purchase-search-resources
-description: "Use this skill when searching for houses or buildings for sale in Portland. Contains listing sites for residential and commercial properties, site-specific strategies, and the JSON data schema for purchase listings."
+description: "Use this skill when searching for houses or buildings for sale in Portland. Contains listing sites, strategies, purchase JSON schema, price history extraction, and sale term scraping."
+user-invocable: false
 ---
 
 ## Residential For-Sale Sites

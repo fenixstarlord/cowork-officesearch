@@ -1,6 +1,7 @@
 ---
 name: listing-evaluation
-description: "Use this skill to evaluate and score rental listings. Mandatory: kitchen/kitchenette and fiber internet. Scoring based on room count, kitchen quality, price, square footage, mixed-use friendliness, fiber quality, and proximity to key people."
+description: "Use this skill to evaluate and score rental listings. Scoring based on room count, kitchen quality, price, square footage, mixed-use friendliness, fiber quality, food proximity, hipness, and safety."
+user-invocable: false
 ---
 
 ## Mandatory Requirements (Must-Have)

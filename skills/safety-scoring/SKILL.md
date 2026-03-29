@@ -1,6 +1,7 @@
 ---
 name: safety-scoring
 description: "Use this skill to evaluate neighborhood safety and noise levels for a listing address. Uses Portland's public data sources and web search for crime reports, noise complaints, and livability factors."
+user-invocable: false
 ---
 
 ## Overview

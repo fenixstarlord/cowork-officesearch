@@ -1,6 +1,7 @@
 ---
 name: search-resources
-description: "Use this skill when searching for apartment or rental listings, or when checking internet availability. Contains the definitive list of listing sites, ISP coverage checker URLs, site-specific search strategies, filter navigation paths, and data extraction patterns for each source."
+description: "Use this skill when searching for apartment or rental listings. Contains listing sites, site-specific search strategies, filter navigation paths, data extraction patterns, price history extraction, and lease term scraping."
+user-invocable: false
 ---
 
 ## Residential Listing Sites

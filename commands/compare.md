@@ -1,4 +1,5 @@
 ---
+name: compare
 description: Generate a side-by-side comparison of 2-3 selected listings
 argument-hint: "[listing-id-1] [listing-id-2] [listing-id-3]"
 allowed-tools: Read, Write, Bash, Glob

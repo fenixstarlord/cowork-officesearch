@@ -1,4 +1,5 @@
 ---
+name: favorites
 description: Manage favorites and review history — mark listings as favorite, rejected, or reviewed
 argument-hint: "[add|remove|list|clear] [listing-id] [--status favorite|rejected|reviewed]"
 allowed-tools: Read, Write, Bash

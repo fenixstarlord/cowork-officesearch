@@ -1,6 +1,7 @@
 ---
 name: hipness-scoring
 description: "Use this skill to evaluate and score the cultural hipness/vibrancy of a listing's area. Combines a neighborhood baseline score with live data from Google Maps Places API, Walk Score, and web/Reddit buzz searches."
+user-invocable: false
 ---
 
 ## Overview

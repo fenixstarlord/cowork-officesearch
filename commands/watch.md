@@ -1,4 +1,5 @@
 ---
+name: watch
 description: Watch for new listings matching saved criteria — re-runs Stage 1, diffs against previous results, and surfaces only new or price-changed listings
 argument-hint: "[rental|purchase] [--interval daily|weekly]"
 allowed-tools: mcp__Claude_in_Chrome__navigate, mcp__Claude_in_Chrome__find, mcp__Claude_in_Chrome__read_page, mcp__Claude_in_Chrome__computer, mcp__Claude_in_Chrome__form_input, mcp__Claude_in_Chrome__get_page_text, mcp__Claude_in_Chrome__javascript_tool, mcp__Claude_in_Chrome__tabs_context_mcp, mcp__Claude_in_Chrome__tabs_create_mcp, Read, Write, Bash, Glob
@@ -138,7 +139,7 @@ The search-listings commands automatically save criteria to `data/output/search-
 ## Scheduling
 
 If `--interval` is specified:
-- `daily`: Remind the user to run `/watch rental` each day (or use the `/schedule` skill to automate)
+- `daily`: Remind the user to run `/watch rental` each day
 - `weekly`: Same, but weekly
 
-The watch command itself is always on-demand. Scheduling integration is handled separately via the `schedule` skill if the user wants true automation.
+The watch command itself is always on-demand. There is no automated scheduling — the user must run `/watch` manually each time.
