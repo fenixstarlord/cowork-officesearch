@@ -35,7 +35,100 @@ class PurchaseCog(commands.Cog, name="Purchase"):
 
     purchase_group = app_commands.Group(name="purchase", description="Purchase search commands")
 
-    @purchase_group.command(name="search", description="Search Portland for-sale properties under $700k")
+    @purchase_group.command(name="run", description="Run full purchase pipeline: search → internet check → report")
+    @app_commands.describe(
+        max_price="Maximum purchase price (default: $700,000)",
+        property_type="Property type filter: house, duplex, multi-family, mixed-use, commercial, any",
+    )
+    async def run_full_pipeline(
+        self,
+        interaction: discord.Interaction,
+        max_price: int = 700000,
+        property_type: str = "any",
+    ):
+        await interaction.response.defer()
+
+        status_msg = await interaction.followup.send(
+            embed=search_status_embed("Stage 1/3: Search", "Initializing browser..."),
+            wait=True,
+        )
+
+        # ── Stage 1: Search ────────────────────────────────────────────
+        async def search_progress(msg: str):
+            try:
+                await status_msg.edit(embed=search_status_embed("Stage 1/3: Search", msg))
+            except Exception:
+                pass
+
+        scraper = ListingScraper()
+        try:
+            await scraper.start()
+            listings = await scraper.search_purchases(
+                max_price=max_price,
+                progress_callback=search_progress,
+            )
+        finally:
+            await scraper.close()
+
+        if not listings:
+            await status_msg.edit(embed=error_embed("No properties found. Try adjusting your criteria."))
+            return
+
+        if property_type != "any":
+            listings = [l for l in listings if property_type.lower() in (l.property_type or "").lower()
+                        or property_type.lower() in l.listing_type.lower()]
+
+        for l in listings:
+            score_safety(l)
+        listings = score_listings(listings, mode="purchase")
+
+        save_search_criteria({
+            "mode": "purchase",
+            "max_price": max_price,
+            "property_type": property_type,
+        })
+        save_listings(listings, config.DATA_DIR / "purchase-listings.json")
+
+        # ── Stage 2: Internet Check ────────────────────────────────────
+        async def inet_progress(checked: int, total: int, current: str):
+            try:
+                await status_msg.edit(embed=internet_status_embed(checked, total, current))
+            except Exception:
+                pass
+
+        await status_msg.edit(embed=search_status_embed("Stage 2/3: Internet", f"Checking {len(listings)} addresses..."))
+
+        checker = InternetChecker()
+        try:
+            await checker.start()
+            listings = await checker.check_listings(listings, progress_callback=inet_progress)
+        finally:
+            await checker.close()
+
+        listings = score_listings(listings, mode="purchase")
+        save_listings(listings, config.DATA_DIR / "purchase-listings.json")
+
+        # ── Stage 3: Report ────────────────────────────────────────────
+        async def report_progress(msg: str):
+            try:
+                await status_msg.edit(embed=search_status_embed("Stage 3/3: Report", msg))
+            except Exception:
+                pass
+
+        await status_msg.edit(embed=search_status_embed("Stage 3/3: Report", f"Generating report for {len(listings)} listings..."))
+        report_path = await build_report(listings, mode="purchase", progress_callback=report_progress)
+
+        # ── Final summary ──────────────────────────────────────────────
+        excellent = sum(1 for l in listings if l.internet and l.internet.classification == "Excellent")
+        summary = listing_summary_embed(listings, mode="purchase", title="Purchase Pipeline Complete")
+        summary.add_field(name="Fiber Available", value=str(excellent), inline=True)
+        summary.add_field(name="Report", value=f"`{report_path.name}`", inline=True)
+
+        paginator = ListingPaginator(listings, mode="purchase")
+        await status_msg.edit(embed=summary, view=paginator)
+        await interaction.followup.send(file=discord.File(str(report_path), filename=report_path.name))
+
+    @purchase_group.command(name="search", description="Search Portland for-sale properties under $700k (stage 1 only)")
     @app_commands.describe(
         max_price="Maximum purchase price (default: $700,000)",
         property_type="Property type filter: house, duplex, multi-family, mixed-use, commercial, any",

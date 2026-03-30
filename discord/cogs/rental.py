@@ -37,7 +37,100 @@ class RentalCog(commands.Cog, name="Rental"):
 
     rental_group = app_commands.Group(name="rental", description="Rental search commands")
 
-    @rental_group.command(name="search", description="Search Portland rental listings")
+    @rental_group.command(name="run", description="Run full rental pipeline: search → internet check → report")
+    @app_commands.describe(
+        bedrooms="Minimum bedrooms (default: 2)",
+        max_price="Maximum monthly rent (no cap if omitted)",
+        mixed_use="Prefer mixed-use/live-work spaces",
+    )
+    async def run_full_pipeline(
+        self,
+        interaction: discord.Interaction,
+        bedrooms: int = 2,
+        max_price: int | None = None,
+        mixed_use: bool = True,
+    ):
+        await interaction.response.defer()
+
+        status_msg = await interaction.followup.send(
+            embed=search_status_embed("Stage 1/3: Search", "Initializing browser..."),
+            wait=True,
+        )
+
+        # ── Stage 1: Search ────────────────────────────────────────────
+        async def search_progress(msg: str):
+            try:
+                await status_msg.edit(embed=search_status_embed("Stage 1/3: Search", msg))
+            except Exception:
+                pass
+
+        scraper = ListingScraper()
+        try:
+            await scraper.start()
+            listings = await scraper.search_rentals(
+                bedrooms=bedrooms,
+                max_price=max_price,
+                progress_callback=search_progress,
+            )
+        finally:
+            await scraper.close()
+
+        if not listings:
+            await status_msg.edit(embed=error_embed("No listings found. Try adjusting your search criteria."))
+            return
+
+        for l in listings:
+            score_safety(l)
+        listings = score_listings(listings, mode="rental")
+
+        save_search_criteria({
+            "mode": "rental",
+            "bedrooms": bedrooms,
+            "max_price": max_price,
+            "mixed_use": mixed_use,
+        })
+        save_listings(listings, config.DATA_DIR / "listings.json")
+
+        # ── Stage 2: Internet Check ────────────────────────────────────
+        async def inet_progress(checked: int, total: int, current: str):
+            try:
+                await status_msg.edit(embed=internet_status_embed(checked, total, current))
+            except Exception:
+                pass
+
+        await status_msg.edit(embed=search_status_embed("Stage 2/3: Internet", f"Checking {len(listings)} addresses..."))
+
+        checker = InternetChecker()
+        try:
+            await checker.start()
+            listings = await checker.check_listings(listings, progress_callback=inet_progress)
+        finally:
+            await checker.close()
+
+        listings = score_listings(listings, mode="rental")
+        save_listings(listings, config.DATA_DIR / "listings.json")
+
+        # ── Stage 3: Report ────────────────────────────────────────────
+        async def report_progress(msg: str):
+            try:
+                await status_msg.edit(embed=search_status_embed("Stage 3/3: Report", msg))
+            except Exception:
+                pass
+
+        await status_msg.edit(embed=search_status_embed("Stage 3/3: Report", f"Generating report for {len(listings)} listings..."))
+        report_path = await build_report(listings, mode="rental", progress_callback=report_progress)
+
+        # ── Final summary ──────────────────────────────────────────────
+        excellent = sum(1 for l in listings if l.internet and l.internet.classification == "Excellent")
+        summary = listing_summary_embed(listings, mode="rental", title="Rental Pipeline Complete")
+        summary.add_field(name="Fiber Available", value=str(excellent), inline=True)
+        summary.add_field(name="Report", value=f"`{report_path.name}`", inline=True)
+
+        paginator = ListingPaginator(listings, mode="rental")
+        await status_msg.edit(embed=summary, view=paginator)
+        await interaction.followup.send(file=discord.File(str(report_path), filename=report_path.name))
+
+    @rental_group.command(name="search", description="Search Portland rental listings (stage 1 only)")
     @app_commands.describe(
         bedrooms="Minimum bedrooms (default: 2)",
         max_price="Maximum monthly rent (no cap if omitted)",
