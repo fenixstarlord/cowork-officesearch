@@ -24,16 +24,7 @@ Run the full purchase search pipeline: search for-sale listing sites (under $700
 4. Create `data/output/screenshots/` directory if it doesn't exist
 5. Initialize empty `data/output/purchase-listings.json` array
 
-6. **Save search criteria** to `data/output/search-criteria.json` for `/watch` command:
-   ```json
-   {
-     "type": "purchase",
-     "saved_at": "2026-03-29T10:00:00",
-     "criteria": { "max_price": 700000, "max_results": 20, "neighborhood": "all" }
-   }
-   ```
-
-7. **For each residential sale site** (Zillow, Redfin, Realtor.com):
+6. **For each residential sale site** (Zillow, Redfin, Realtor.com):
    a. Navigate to the site's Portland for-sale URL
    b. Apply filters: max price $700,000, target zip codes/neighborhoods (use multiple searches per `portland-geography` Search Radius Guidance)
    c. Include both houses and multi-family/commercial properties
@@ -118,16 +109,20 @@ Score all listings and sync them to the Notion database, where each listing beco
 
 1. Read `data/output/purchase-listings.json`. Validate that listings exist and most have internet data.
 2. Read `data/config.json` for Notion database ID and key locations.
-3. Read `data/output/reviewed.json` if it exists (for Status property).
-4. Load the `purchase-evaluation` skill to compute a final score for each listing (includes hipness + safety components).
-5. Score each listing using the purchase rubric (0-100 scale).
-6. For each listing, sync to Notion:
+3. Load the `purchase-evaluation` skill to compute a final score for each listing (includes hipness + safety components).
+4. Score each listing using the purchase rubric (0-100 scale).
+5. Filter to listings where `notion_synced` is not `true` (enables resume after interruption).
+6. For each un-synced listing, sync to Notion:
    a. Search the database for an existing page matching this address (Name property)
    b. If found: update the existing page's properties and body content
    c. If not found: create a new page with all properties and body content
-7. Report: "Synced X properties to Notion. Y new, Z updated. Top 3: [addresses with scores]."
+   d. On success: set `notion_synced = true` in the JSON and write back immediately
+7. Report: "Synced X properties to Notion. Y new, Z updated, W skipped (already synced). Top 3: [addresses with scores]."
 
-See the `report-builder` agent for the full list of Notion database properties and page body format.
+See the `report-builder` agent for the full Notion database schema, distance calculation, and page body format.
+
+#### Re-Runnability
+Stage 3 only syncs listings where `notion_synced` is not `true`. If interrupted, re-running `/purchase` picks up where it left off.
 
 #### Expected Output
 - Notion database rows created/updated (one per listing)
