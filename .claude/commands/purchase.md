@@ -117,7 +117,9 @@ Score all listings and sync them to the Notion database, where each listing beco
    b. If found: update the existing page's properties and body content
    c. If not found: create a new page with all properties and body content
    d. On success: set `notion_synced = true` in the JSON and write back immediately
-7. Report: "Synced X properties to Notion. Y new, Z updated, W skipped (already synced). Top 3: [addresses with scores]."
+7. Save a CSV backup to `data/output/purchase-listings-YYYYMMDD-HHMM.csv` (text data only, no screenshots).
+8. Remove stale listings from Notion — any Purchase rows whose address is no longer in the current results.
+9. Report: "Synced X properties to Notion. Y new, Z updated, W skipped, R removed. Top 3: [addresses with scores]."
 
 See the `report-builder` agent for the full Notion database schema, distance calculation, and page body format.
 
@@ -126,6 +128,8 @@ Stage 3 only syncs listings where `notion_synced` is not `true`. If interrupted,
 
 #### Expected Output
 - Notion database rows created/updated (one per listing)
+- CSV backup at `data/output/purchase-listings-YYYYMMDD-HHMM.csv`
+- Stale Notion rows removed (listings no longer in results)
 - Chat confirmation with sync counts and top 3 recommendations
 
 #### Delegation

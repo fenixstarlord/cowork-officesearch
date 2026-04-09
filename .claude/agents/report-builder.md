@@ -38,13 +38,21 @@ You have access to Notion connector tools provided by the Cowork session. These 
    e. If the API fails for a listing, fall back to the Geocoding API + haversine formula
    f. If all geocoding fails, note "distance unavailable" in the page body
 
-5. **For each listing**, sync to Notion:
+5. **Save CSV backup** to `data/output/listings-YYYYMMDD-HHMM.csv` (rental) or `data/output/purchase-listings-YYYYMMDD-HHMM.csv` (purchase). Include columns: address, price, bedrooms, bathrooms, sqft, neighborhood, listing_type, internet_classification, hipness_score, safety_score, score, source, url. No screenshots or photos in the CSV — text data only.
+
+6. **For each listing**, sync to Notion:
    a. Search the Notion database for an existing page where the Name (title) matches this listing's address
    b. If a match is found: **update** the existing page's properties and body
    c. If no match: **create** a new page with all properties and body content
    d. After successful sync, set `listing.notion_synced = true` in the listings JSON and write back to disk immediately (this enables resume on interruption)
 
-6. **Report summary** in chat: "Synced X listings to Notion. Y new, Z updated, W skipped (already synced). Top 3: [addresses with scores]."
+7. **Remove stale listings** from Notion:
+   - Query all pages in the Notion database where Type matches the current search type ("Rental" or "Purchase")
+   - For each Notion page, check if its address (Name) exists in the current listings JSON
+   - If a Notion page's address is NOT in the current results, **delete or archive** it (the listing is no longer available)
+   - Report how many stale listings were removed
+
+8. **Report summary** in chat: "Synced X listings to Notion. Y new, Z updated, W skipped (already synced). R stale listings removed. Top 3: [addresses with scores]."
 
 ## Notion Database Properties
 
@@ -78,7 +86,7 @@ Set these properties on each page:
 | **Terms** | Rich text | Formatted `lease_terms` (rental) or `sale_terms` (purchase) |
 | **Hipness Notes** | Rich text | Buzz summary: highlights from `hipness_buzz` |
 | **Safety Notes** | Rich text | Details from `safety_details`: crime notes, noise sources |
-| **Search Date** | Date | Current date (ISO format) |
+| **Last Updated** | Date | Current date (ISO format) — updated each time the listing is synced |
 | **Street View** | URL | `https://www.google.com/maps/@?api=1&map_action=pano&viewpoint={encoded_address}` |
 | **Map Link** | URL | `https://www.google.com/maps/search/?api=1&query={encoded_address}` |
 
