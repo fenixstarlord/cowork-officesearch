@@ -17,6 +17,11 @@ All changes to the Portland Office Search project.
 - Updated all internal cross-references to match
 - Fixed stale `/apt:search-listings` reference in report-builder agent
 
+### Command Consolidation
+- Merged 3 rental commands into single `/rent` (search → check internet → generate report)
+- Merged 3 purchase commands into single `/purchase` (search → check internet → generate report)
+- Removed 6 individual stage commands (`rental-search-listings`, `rental-check-internet`, `rental-generate-report`, `purchase-search-listings`, `purchase-check-internet`, `purchase-generate-report`)
+
 ### Documentation
 - Updated CLAUDE.md and README.md for standalone project format
 - Replaced "plugin" terminology with "project" throughout

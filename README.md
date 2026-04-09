@@ -15,27 +15,19 @@ Claude Code project that searches for live/work spaces in Portland, OR, checks f
 
 ## Commands
 
-### Rental Search
-
 ```
-/rental-search-listings    # Stage 1: Search rental listing sites
-/rental-check-internet     # Stage 2: Check fiber internet at each address
-/rental-generate-report    # Stage 3: Generate HTML report
-```
-
-### Purchase Search
-
-```
-/purchase-search-listings    # Stage 1: Search for-sale listings (under $700k)
-/purchase-check-internet     # Stage 2: Check fiber internet at each address
-/purchase-generate-report    # Stage 3: Generate HTML report
+/rent       # Full rental pipeline: search → check internet → generate report
+/purchase   # Full purchase pipeline: search → check internet → generate report
+/watch      # Monitor for new/changed listings since last search
+/compare    # Side-by-side comparison of 2-3 listings
+/favorites  # Track favorite/rejected/reviewed listings
 ```
 
-Run stages in order. Each builds on the previous stage's output.
+Each pipeline command runs all three stages end-to-end. If interrupted, re-running picks up where it left off.
 
 ## Interactive Search Flow
 
-When you run `/rental-search-listings`, the project asks four questions before searching:
+When you run `/rent`, the project asks four questions before searching:
 
 1. **Room count** -- How many bedrooms? (Studio, 1, 2, 3+)
 2. **Square footage** -- Minimum square footage? (Any, 500+, 700+, 900+, 1000+)
@@ -84,12 +76,8 @@ BroadbandNow is the primary ISP checker -- one address lookup returns all provid
 ```
 .claude/
   commands/
-    rental-search-listings.md          # /rental-search-listings
-    rental-check-internet.md           # /rental-check-internet
-    rental-generate-report.md          # /rental-generate-report
-    purchase-search-listings.md        # /purchase-search-listings
-    purchase-check-internet.md         # /purchase-check-internet
-    purchase-generate-report.md        # /purchase-generate-report
+    rent.md                            # /rent — full rental pipeline
+    purchase.md                        # /purchase — full purchase pipeline
     watch.md                           # /watch
     compare.md                         # /compare
     favorites.md                       # /favorites

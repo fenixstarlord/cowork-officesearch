@@ -6,19 +6,19 @@ You are an office space search assistant specializing in Portland, OR. Your goal
 
 ## Workflow Overview
 
-This project has two command sets, each operating as a three-stage pipeline:
+This project has two main commands, each running a three-stage pipeline end-to-end:
 
-### Rental Search
-1. **Search Listings** (`/rental-search-listings`) — Browse residential and commercial rental listing sites for spaces matching criteria: 2+ rooms, bathroom, kitchenette. No price cap.
-2. **Check Internet** (`/rental-check-internet`) — For each viable listing, check fiber internet availability at the address.
-3. **Generate Report** (`/rental-generate-report`) — Compile results into an HTML report with listing photos, Google Maps/Street View, stats, internet data, and scores.
+### `/rent` — Rental Search
+1. **Search Listings** — Browse residential and commercial rental listing sites for spaces matching criteria: 2+ rooms, bathroom, kitchenette. No price cap.
+2. **Check Internet** — For each viable listing, check fiber internet availability at the address.
+3. **Generate Report** — Compile results into an HTML report with listing photos, Google Maps/Street View, stats, internet data, and scores.
 
-### Purchase Search
-1. **Search Listings** (`/purchase-search-listings`) — Browse residential and commercial for-sale listing sites for properties under $700k (houses, buildings, mixed-use, commercial).
-2. **Check Internet** (`/purchase-check-internet`) — For each property, check fiber internet availability at the address.
-3. **Generate Report** (`/purchase-generate-report`) — Compile results into an HTML report with photos, maps, property details, internet data, and scores.
+### `/purchase` — Purchase Search
+1. **Search Listings** — Browse residential and commercial for-sale listing sites for properties under $700k (houses, buildings, mixed-use, commercial).
+2. **Check Internet** — For each property, check fiber internet availability at the address.
+3. **Generate Report** — Compile results into an HTML report with photos, maps, property details, internet data, and scores.
 
-Each stage can be run independently. Stage 2 requires Stage 1 output. Stage 3 requires Stage 2 output.
+Each command runs all three stages sequentially. Stages are re-runnable — if interrupted, re-running picks up where it left off.
 
 ### Utility Commands
 - **`/watch`** — Monitor for new or price-changed listings since last search. Diffs current vs previous results.
@@ -140,14 +140,9 @@ For 6+ listings, internet availability checks use multiple browser tabs to reduc
 | `.claude/skills/hipness-scoring/SKILL.md` | Area hipness/vibrancy scoring (baseline + live data + web buzz) |
 | `.claude/skills/safety-scoring/SKILL.md` | Neighborhood safety and noise scoring (crime data + web search) |
 | `.claude/skills/deduplication/SKILL.md` | Cross-site listing deduplication (address normalization + merge) |
-| **Rental Commands** | |
-| `.claude/commands/rental-search-listings.md` | Stage 1: search rental listing sites |
-| `.claude/commands/rental-check-internet.md` | Stage 2: check fiber availability for rentals |
-| `.claude/commands/rental-generate-report.md` | Stage 3: generate rental HTML report |
-| **Purchase Commands** | |
-| `.claude/commands/purchase-search-listings.md` | Stage 1: search for-sale listing sites (under $700k) |
-| `.claude/commands/purchase-check-internet.md` | Stage 2: check fiber availability for purchases |
-| `.claude/commands/purchase-generate-report.md` | Stage 3: generate purchase HTML report |
+| **Commands** | |
+| `.claude/commands/rent.md` | Full rental pipeline: search, check internet, generate report |
+| `.claude/commands/purchase.md` | Full purchase pipeline: search, check internet, generate report |
 | **Utility Commands** | |
 | `.claude/commands/watch.md` | Monitor for new/changed listings since last search |
 | `.claude/commands/compare.md` | Side-by-side comparison of 2-3 listings |

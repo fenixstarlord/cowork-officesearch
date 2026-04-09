@@ -107,7 +107,7 @@ Tracked Listings (5 total):
 
 ## Report Integration
 
-When generating reports (`/rental-generate-report` or `/purchase-generate-report`):
+When generating reports (`/rent` or `/purchase`):
 
 1. Read `reviewed.json` if it exists
 2. For each listing in the report:
