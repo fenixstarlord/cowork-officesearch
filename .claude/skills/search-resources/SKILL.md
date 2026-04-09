@@ -3,15 +3,15 @@ name: search-resources
 description: "Use this skill when searching for apartment or rental listings, or when checking internet availability. Contains the definitive list of listing sites, ISP coverage checker URLs, site-specific search strategies, filter navigation paths, and data extraction patterns for each source."
 ---
 
-## Residential Listing Sites
+## Residential Listing Sites (searched when property type is "Residential" or "All")
 
 | Site | Base URL | Strategy |
 |------|----------|----------|
-| Zillow Rentals | `https://www.zillow.com/portland-or/rentals/` | Apply filters for 2+ beds, zoom to SE Portland on map, use `read_page` for listing cards, click into each for amenities |
-| Apartments.com | `https://www.apartments.com/portland-or/` | Use search bar with neighborhood name, filter 2+ beds, scroll cards |
-| Craigslist Portland | `https://portland.craigslist.org/search/apa` | Append `?min_bedrooms=2&postal=97202&search_distance=3`, look for keywords "live/work", "mixed use", "home office" |
-| HotPads | `https://hotpads.com/portland-or/apartments-for-rent` | Filter panel 2+ beds, map-based zoom to SE |
-| Redfin | `https://www.redfin.com/city/30772/OR/Portland/apartments-for-rent` | Filter 2+ beds, check both Apartment and House types |
+| Zillow Rentals | `https://www.zillow.com/portland-or/rentals/` | Apply filters for 2+ beds (or property type "House" for whole house search), zoom to SE Portland on map, use `read_page` for listing cards, click into each for amenities |
+| Apartments.com | `https://www.apartments.com/portland-or/` | Use search bar with neighborhood name, filter 2+ beds (or property type "House" for whole house), scroll cards |
+| Craigslist Portland | `https://portland.craigslist.org/search/apa` | Append `?min_bedrooms=2&postal=97202&search_distance=3` (or `?housing_type=6&postal=97202&search_distance=3` for whole house), look for keywords "live/work", "mixed use", "home office" |
+| HotPads | `https://hotpads.com/portland-or/apartments-for-rent` | Filter panel 2+ beds (or property type "House" for whole house), map-based zoom to SE |
+| Redfin | `https://www.redfin.com/city/30772/OR/Portland/apartments-for-rent` | Filter 2+ beds, check both Apartment and House types (for whole house, filter to House only) |
 
 ## Additional Listing Sources
 
@@ -22,7 +22,7 @@ description: "Use this skill when searching for apartment or rental listings, or
 
 **Note**: Facebook Marketplace and Nextdoor require user login. Before searching these sites, ask the user: "I need to search Facebook Marketplace / Nextdoor. Please log in to [site] in the browser, then tell me when you're ready." Skip if user declines.
 
-## Commercial/Mixed-Use Listing Sites
+## Commercial/Mixed-Use Listing Sites (searched when property type is "Mixed use", "Commercial", or "All")
 
 | Site | Base URL | Strategy |
 |------|----------|----------|
@@ -68,14 +68,14 @@ Step-by-step Chrome tool usage pattern for each listing site:
   thumbs.forEach(function(t) { if(t.src) urls.push(t.src.replace('_50x50c.jpg','_600x450.jpg')); });
   JSON.stringify(urls.slice(0,8))
   ```
-  Download each with `curl -s -o data/output/screenshots/{id}-{n}.jpg "{url}"` (n = 1 through 8, configurable via `data/config.json` `max_photos_per_listing`). Do NOT rely on Chrome `save_to_disk` screenshots — they exist only in extension memory and never write to disk.
+  Store the extracted URLs in the listing's `photo_urls` array (for Notion embedding), then download each with `curl -s -o data/output/screenshots/{id}-{n}.jpg "{url}"` (n = 1 through 8, configurable via `data/config.json` `max_photos_per_listing`). Do NOT rely on Chrome `save_to_disk` screenshots — they exist only in extension memory and never write to disk.
 
   **Floor plan extraction**: If the listing has a floor plan image (common on Zillow, Apartments.com), extract it separately:
   ```js
   var fp = document.querySelector('[alt*="floor plan"], [alt*="Floor Plan"], .floor-plan img');
   fp ? fp.src : null
   ```
-  Download to `data/output/screenshots/{id}-floorplan.jpg` if found.
+  Download to `data/output/screenshots/{id}-floorplan.jpg` if found. Store the original URL in `floorplan_url`.
 
 ### Chrome Extension Troubleshooting
 
@@ -160,7 +160,9 @@ Each listing should be stored as a JSON object following this structure:
   "neighborhood": "Hosford-Abernethy",
   "listing_type": "residential",
   "photo_paths": ["data/output/screenshots/zillow-12345-1.jpg", "data/output/screenshots/zillow-12345-2.jpg"],
+  "photo_urls": ["https://photos.zillowstatic.com/abc123.jpg", "https://photos.zillowstatic.com/def456.jpg"],
   "floorplan_path": null,
+  "floorplan_url": null,
   "also_listed_on": [],
   "price_history": null,
   "days_on_market": null,

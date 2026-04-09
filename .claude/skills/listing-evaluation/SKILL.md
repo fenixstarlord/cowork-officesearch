@@ -7,7 +7,7 @@ description: "Use this skill to evaluate and score rental listings. Mandatory: k
 
 A listing MUST meet ALL of these to be included:
 
-- Minimum bedroom count specified by user (default: 2+)
+- Minimum bedroom count specified by user (default: 2+), OR "Whole house" property style (any bedroom count, property must be a house)
 - At least 1 bathroom
 - Kitchen or kitchenette (scan for: "kitchen", "kitchenette", "galley kitchen", "cooking area", "stove", "oven", "range", "refrigerator", "microwave")
 - Fiber internet available at the address (checked in Stage 2 — if no fiber, downgrade significantly)
@@ -17,7 +17,7 @@ A listing MUST meet ALL of these to be included:
 
 | Factor | Weight | Scoring |
 |--------|--------|---------|
-| Room count | 12% | Meets minimum = 9pts, exceeds by 1+ = 12pts |
+| Room count | 12% | Meets minimum = 9pts, exceeds by 1+ = 12pts. Whole house: 3+ beds = 12pts, 2 beds = 9pts, 1 bed = 6pts |
 | Kitchen quality | 8% | Full kitchen = 8pts, kitchenette = 5pts, unclear = 2pts |
 | Price reasonableness | 14% | Under $1,800 = 14pts, $1,800-2,200 = 11pts, $2,200-2,800 = 7pts, $2,800-3,500 = 4pts, over $3,500 = 2pts |
 | Square footage | 8% | Over 900 sqft = 8pts, 700-900 = 6pts, 500-700 = 4pts, under 500 = 2pts |
