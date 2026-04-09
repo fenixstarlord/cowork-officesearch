@@ -153,9 +153,9 @@ These are general starting points — always verify with live data:
 | Downtown | Low-Moderate | Property crime, some safety concerns, improving |
 | Hosford-Abernethy | Moderate | Varies by block, Division is busier |
 
-## Report Display
+## Notion Display
 
-In the HTML report, display the safety score as:
-- A colored badge (green 65+, yellow 50-64, orange 35-49, red below 35)
-- Brief safety notes (1-2 sentences)
-- Noise sources listed if significant
+In the Notion database, safety data is stored as:
+- **Safety** property: numeric score (0-100)
+- **Safety Tier** property: select value (Very Safe & Quiet, Safe, Moderate, Some Concerns, Significant)
+- **Safety Notes** property: brief safety notes, crime trend, and noise sources

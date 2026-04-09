@@ -86,7 +86,7 @@ description: "Use this skill when searching for houses or buildings for sale in 
 
 ## Internet Enrichment Schema
 
-Same as rental — added by `/purchase:check-internet`:
+Same as rental — added by `/purchase` (Stage 2):
 
 ```json
 {

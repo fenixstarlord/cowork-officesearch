@@ -25,11 +25,7 @@
       "max_results": 20
     }
   },
-  "report_settings": {
-    "max_photos_per_listing": 8,
-    "include_interactive_map": true,
-    "include_hipness_score": true,
-    "include_safety_score": true,
-    "show_rejected_listings": false
+  "notion": {
+    "database_id": "33d03407763c80a5a2c1d076f075290e"
   }
 }

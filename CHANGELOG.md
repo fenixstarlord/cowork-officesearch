@@ -1,6 +1,45 @@
 # Changelog
 
-All changes to the Portland Office Search plugin. Dates reflect the single-day development sprint.
+All changes to the Portland Office Search project.
+
+## 2026-04-09 — Replace HTML Reports with Notion Database
+
+### Output
+- Replaced HTML/PDF report generation with Notion database sync
+- Each listing becomes a row with 28 properties (score, price, internet, hipness, safety, etc.)
+- Page body contains description, amenities, distances, internet provider breakdown, price history
+- Re-running updates existing rows (matched by address) instead of creating duplicates
+- Notion database ID configurable in `data/config.json`
+
+### Removed
+- HTML report generation (Pico CSS, Leaflet.js interactive map, photo galleries, lightbox)
+- PDF report generation (`anthropic-skills:pdf`)
+- Python report generators (`generate_report.py`, `generate_html_report.py`)
+- Notion Document Hub integration (replaced by direct database sync)
+
+## 2026-04-09 — Convert to Standalone Cowork Project
+
+### Structure
+- Converted from Claude plugin format to standalone Cowork project format
+- Moved `commands/` → `.claude/commands/`
+- Moved `skills/` → `.claude/skills/`
+- Moved `agents/` → `.claude/agents/`
+- Removed `.claude-plugin/plugin.json` (no longer needed)
+- Removed `package.sh` (no longer needed for distribution)
+
+### Command Naming
+- Commands no longer namespaced: `/rental:search-listings` → `/rental-search-listings`, etc.
+- Updated all internal cross-references to match
+- Fixed stale `/apt:search-listings` reference in report-builder agent
+
+### Command Consolidation
+- Merged 3 rental commands into single `/rent` (search → check internet → generate report)
+- Merged 3 purchase commands into single `/purchase` (search → check internet → generate report)
+- Removed 6 individual stage commands (`rental-search-listings`, `rental-check-internet`, `rental-generate-report`, `purchase-search-listings`, `purchase-check-internet`, `purchase-generate-report`)
+
+### Documentation
+- Updated CLAUDE.md and README.md for standalone project format
+- Replaced "plugin" terminology with "project" throughout
 
 ## 2026-03-27 — Project Rename and Purchase Mode
 
