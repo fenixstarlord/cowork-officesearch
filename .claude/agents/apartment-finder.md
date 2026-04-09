@@ -25,7 +25,7 @@ You browse listing websites using Chrome automation tools. Your job is to naviga
 ### Input
 You receive:
 - A listing site name and URL
-- Filter parameters: minimum bedrooms, target zip codes, price limits (if any)
+- Filter parameters: minimum bedrooms (or "Whole house" property style), target zip codes, price limits (if any), property type preference (Residential, Commercial, Mixed use, All)
 - Target neighborhoods per `portland-geography` skill
 - Maximum listings to collect from this site (default: 5)
 - Photo limit from `data/config.json` `max_photos_per_listing` (default: 8)
@@ -41,6 +41,8 @@ You receive:
 3. **Apply filters**:
    - Use `find` to locate filter controls (bedroom selector, location input, price range)
    - Use `form_input` to set values (2+ bedrooms, zip code 97202 or neighborhood name)
+   - **Whole house mode**: If the user selected "Whole house", filter by property type "House" instead of bedroom count. On Craigslist, use `housing_type=6` URL param. On Zillow/Redfin/Apartments.com, select "House" in the property type filter.
+   - **Property type**: If "Commercial" or "Mixed use", search only commercial sites. If "Residential", search only residential sites. If "All", search both.
    - Use `computer` click action to apply/submit filters
    - Wait for results to load (use `computer` action `wait` for 2-3 seconds)
 4. **Extract listing cards**:
@@ -59,13 +61,14 @@ You receive:
      thumbs.forEach(function(t) { if(t.src) urls.push(t.src.replace('_50x50c.jpg','_600x450.jpg')); });
      JSON.stringify(urls.slice(0,8))
      ```
+   - **Store original photo URLs**: Save the public image URLs extracted via `javascript_tool` in a `photo_urls` array on the listing object. These original URLs are needed for embedding images in Notion pages.
    - Download each to `data/output/screenshots/{id}-1.jpg` through `{id}-8.jpg` using Bash `curl`
    - **Floor plan extraction**: Also look for floor plan images:
      ```js
      var fp = document.querySelector('[alt*="floor plan"], [alt*="Floor Plan"], .floor-plan img');
      fp ? fp.src : null
      ```
-     Download to `data/output/screenshots/{id}-floorplan.jpg` if found
+     Download to `data/output/screenshots/{id}-floorplan.jpg` if found. Store the original URL in `floorplan_url`.
    - Do NOT rely on Chrome `save_to_disk` screenshots — they exist only in extension memory and never write to disk
    - **Extract price history** (if visible on the listing page — common on Zillow, Redfin):
      - Look for "Price History" or "Price Insights" section
@@ -92,7 +95,9 @@ You receive:
      "neighborhood": "best guess from address/zip",
      "listing_type": "residential" or "commercial" or "mixed-use",
      "photo_paths": ["data/output/screenshots/{id}-1.jpg", "...up to 8"],
+     "photo_urls": ["https://original-source.com/photo1.jpg", "...up to 8"],
      "floorplan_path": "data/output/screenshots/{id}-floorplan.jpg or null",
+     "floorplan_url": "https://original-source.com/floorplan.jpg or null",
      "also_listed_on": [],
      "price_history": [{"date": "2026-03-01", "event": "Listed", "price": 1850}],
      "days_on_market": 28,

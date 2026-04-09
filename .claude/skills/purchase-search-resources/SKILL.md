@@ -7,10 +7,10 @@ description: "Use this skill when searching for houses or buildings for sale in 
 
 | Site | Base URL | Strategy |
 |------|----------|----------|
-| Zillow | `https://www.zillow.com/portland-or/` | Filter: For Sale, max $700k, include House + Multi-Family + Condo. Use multiple zip code searches per `portland-geography`. |
-| Redfin | `https://www.redfin.com/city/30772/OR/Portland` | Filter: For Sale, max $700k, all property types. Map-based zoom to target area. |
-| Realtor.com | `https://www.realtor.com/realestateandsales/Portland_OR` | Filter: max price $700k, all property types. |
-| Craigslist | `https://portland.craigslist.org/search/rea` | Real estate for sale section. Append `?max_price=700000`. Search for "house", "building", "mixed use", "duplex". |
+| Zillow | `https://www.zillow.com/portland-or/` | Filter: For Sale, max $700k, property type "House" only. Use multiple zip code searches per `portland-geography`. |
+| Redfin | `https://www.redfin.com/city/30772/OR/Portland` | Filter: For Sale, max $700k, property type "House" only. Map-based zoom to target area. |
+| Realtor.com | `https://www.realtor.com/realestateandsales/Portland_OR` | Filter: max price $700k, property type "House" only. |
+| Craigslist | `https://portland.craigslist.org/search/rea` | Real estate for sale section. Append `?max_price=700000&housing_type=6`. Search for "house". |
 
 ## Additional For-Sale Sources
 
@@ -23,24 +23,15 @@ description: "Use this skill when searching for houses or buildings for sale in 
 
 ## Commercial For-Sale Sites
 
-| Site | Base URL | Strategy |
-|------|----------|----------|
-| LoopNet | `https://www.loopnet.com/search/commercial-real-estate/portland-or/for-sale/` | Filter max $700k. Search "mixed use", "live work", "retail", "office". |
-| Craigslist Commercial | `https://portland.craigslist.org/search/rea` | Search "commercial", "mixed use", "live work", "building" with max $700k. |
-| CommercialCafe | `https://www.commercialcafe.com/commercial-real-estate/us/or/portland/` | Search for-sale listings, filter to $700k max. |
+**Not searched** — purchase pipeline is restricted to residential homes only.
 
 ## Price Cap
 
-**Maximum price: $700,000.** Apply this filter on every site. Include both residential and commercial properties.
+**Maximum price: $700,000.** Apply this filter on every site.
 
 ## Property Types to Include
 
-- Single-family houses
-- Duplexes / triplexes / fourplexes
-- Multi-family buildings
-- Mixed-use (commercial + residential)
-- Commercial buildings (office, retail) suitable for live/work conversion
-- Condos/townhouses (if they allow commercial use)
+- Single-family houses only
 
 ## JSON Data Schema
 
@@ -63,7 +54,9 @@ description: "Use this skill when searching for houses or buildings for sale in 
   "neighborhood": "Hosford-Abernethy",
   "listing_type": "residential",
   "photo_paths": ["data/output/screenshots/zillow-12345-1.jpg", "..."],
+  "photo_urls": ["https://photos.zillowstatic.com/abc123.jpg", "..."],
   "floorplan_path": null,
+  "floorplan_url": null,
   "also_listed_on": [],
   "price_history": null,
   "days_on_market": null,

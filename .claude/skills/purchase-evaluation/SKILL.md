@@ -55,21 +55,9 @@ Properties on or near these streets score higher:
 
 ## Property Type Classification
 
+Only residential single-family houses are searched. Other property types (duplex, commercial, condo) are excluded from results.
+
 - **Single-family house**: Standard house, may have basement/garage convertible to office
-- **Duplex/triplex/fourplex**: Multi-unit, live in one + use another as office, or rent out units
-- **Mixed-use building**: Already zoned commercial + residential. Ideal for live/work.
-- **Commercial building**: Office/retail space, may require residential conversion permits
-- **Condo/townhouse**: Check HOA rules for commercial use before scoring high on mixed-use
-
-## Mixed-Use Keywords
-
-Scan descriptions for:
-- "mixed use", "live/work", "home office", "commercial"
-- "zoned commercial", "retail below", "storefront"
-- "duplex", "triplex", "fourplex", "multi-family"
-- "separate entrance", "ADU", "accessory dwelling"
-- "basement office", "ground floor commercial"
-- "income property", "investment"
 
 ## Key Locations for Distance Calculation
 
@@ -81,7 +69,7 @@ Key locations are configured in `data/config.json` under `key_locations`. The re
 - Located outside Portland city limits
 - Land-only (no structure)
 - Tear-down / condemned
-- HOA that prohibits any business use (for condos)
+- Not a single-family house (condos, duplexes, commercial buildings, etc.)
 
 ## Score Interpretation
 

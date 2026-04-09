@@ -18,7 +18,7 @@
       "bedrooms": 2,
       "min_sqft": null,
       "max_price": null,
-      "mixed_use": "preferred"
+      "property_type": "all"
     },
     "purchase": {
       "max_price": 700000,

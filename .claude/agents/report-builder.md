@@ -105,6 +105,12 @@ Write the page body as markdown with these sections:
 - {amenity_2}
 - ...
 
+## Photos
+{For each URL in photo_urls, add a Notion image block — see Photo Embedding section below}
+
+## Floor Plan
+{If floorplan_url exists, add a Notion image block for it}
+
 ## Distances
 - **Chris**: {driving_distance}, {driving_duration} (10363 SE 24th Ave)
 - **George**: {driving_distance}, {driving_duration} (3816 SW Lee St)
@@ -123,6 +129,57 @@ Write the page body as markdown with these sections:
 ## Previous Sales
 {previous_sales entries, if available — purchase only}
 ```
+
+### Photo Embedding in Notion
+
+When building page body blocks for the Notion API, embed listing photos using their **public URLs** from `photo_urls`. Do NOT use local file paths from `photo_paths` — the Notion API requires publicly accessible URLs.
+
+#### Page Cover Image
+
+When creating or updating a Notion page, if `photo_urls` is non-empty, set the **first photo URL** as the page cover:
+```json
+{
+  "cover": {
+    "type": "external",
+    "external": {
+      "url": "https://images.craigslist.org/abc_600x450.jpg"
+    }
+  }
+}
+```
+This makes the listing photo visible in database gallery/board views. If `photo_urls` is empty or missing, do not set a cover.
+
+#### Page Body Image Blocks
+
+For each URL in `photo_urls`, add a Notion image block with external URL type:
+```json
+{
+  "type": "image",
+  "image": {
+    "type": "external",
+    "external": {
+      "url": "https://images.craigslist.org/abc_600x450.jpg"
+    }
+  }
+}
+```
+
+Add a heading block before the images:
+```json
+{
+  "type": "heading_2",
+  "heading_2": {
+    "rich_text": [{"type": "text", "text": {"content": "Photos"}}]
+  }
+}
+```
+
+If `floorplan_url` exists and is not null, add it as a separate image block under a "Floor Plan" heading.
+
+**Important**:
+- Only embed photos if `photo_urls` exists and is non-empty. Skip the Photos section if missing.
+- Use the original public URLs from `photo_urls`, NOT local file paths from `photo_paths`. Local paths (`data/output/screenshots/...`) will not work with the Notion API.
+- Most listing site image URLs (Craigslist, Zillow, Redfin) are publicly accessible. If an image fails to load in Notion, it will show a broken image placeholder — this is acceptable.
 
 ## Deduplication (Update vs Create)
 

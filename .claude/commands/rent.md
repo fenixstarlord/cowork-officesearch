@@ -16,10 +16,10 @@ Run the full rental search pipeline: search listing sites, check fiber internet 
 
 Before searching, ask these questions (use AskUserQuestion or chat):
 
-1. **Room count** — How many bedrooms? (Studio, 1, 2, 3+)
+1. **Room count** — How many bedrooms? (Studio, 1, 2, 3+, Whole house)
 2. **Square footage** — Minimum square footage? (Any, 500+, 700+, 900+, 1000+)
 3. **Price maximum** — Max monthly rent? (No cap, $1,500, $2,000, $2,500, $3,000, custom)
-4. **Mixed use or business** — Do you need mixed-use/commercial zoning or the ability to run a business from the space? (Yes, No, Preferred but not required)
+4. **Property type** — What type of property? (Residential, Commercial, Mixed use, All)
 
 #### Always Required (do not ask)
 - Fiber internet availability (checked in Stage 2)
@@ -28,7 +28,7 @@ Before searching, ask these questions (use AskUserQuestion or chat):
 ### Step 2: Confirm and Search
 
 Confirm the parsed criteria:
-> "Searching for: [bedrooms], [min sqft], under [price], [mixed-use preference], with kitchen, fiber internet required. Sound right?"
+> "Searching for: [bedrooms or Whole house], [min sqft], under [price], [property type], with kitchen, fiber internet required. Sound right?"
 
 ### Step 3: Execute Search
 
@@ -39,9 +39,9 @@ Confirm the parsed criteria:
 5. Initialize empty `data/output/listings.json` array
 
 6. **Translate criteria to site-specific filters:**
-   - **Craigslist**: URL params (`min_bedrooms`, `max_price`, `min_sqft`, `postal`, `search_distance`)
-   - **Zillow/Redfin**: Filter panel controls
-   - **Apartments.com/HotPads**: Search bar + filter panel
+   - **Craigslist**: URL params (`min_bedrooms`, `max_price`, `min_sqft`, `postal`, `search_distance`). For "Whole house", use `housing_type=6` and omit `min_bedrooms`.
+   - **Zillow/Redfin**: Filter panel controls. For "Whole house", select property type "House" instead of bedroom count.
+   - **Apartments.com/HotPads**: Search bar + filter panel. For "Whole house", filter property type to "House".
 
 8. **For each listing site**, apply filters and extract listings:
    a. Navigate to site URL
@@ -53,7 +53,11 @@ Confirm the parsed criteria:
    g. Extract price history and lease terms when visible on listing pages
    h. Build listing JSON objects (including new fields: `price_history`, `lease_terms`, `floorplan_path`, etc.)
 
-9. **If user wants mixed-use**, also search LoopNet, CommercialCafe, Craigslist commercial
+9. **Select sites based on property type preference:**
+   - **Residential**: Search only residential listing sites (Zillow, Apartments.com, Craigslist apartments, HotPads, Redfin)
+   - **Mixed use**: Search residential sites AND commercial sites (LoopNet, CommercialCafe, Craigslist commercial)
+   - **Commercial**: Search only commercial listing sites (LoopNet, CommercialCafe, Craigslist commercial/office)
+   - **All**: Search all residential and commercial sites
 
 10. **Search additional sources** (ask user for login first):
     - Facebook Marketplace (propertyrentals category)
@@ -74,6 +78,9 @@ Confirm the parsed criteria:
 ```
 ?min_bedrooms=2&max_price=2000&minSqft=700&postal=97214&search_distance=3
 &pets_cat=1&pets_dog=1&laundry=1&parking=1
+
+# Whole house variant (omit min_bedrooms, add housing_type):
+?housing_type=6&max_price=2000&minSqft=700&postal=97214&search_distance=3
 ```
 
 #### CAPTCHA Handling
@@ -143,7 +150,8 @@ Score all listings and sync them to the Notion database, where each listing beco
    a. Search the database for an existing page matching this address (Name property)
    b. If found: update the existing page's properties and body content
    c. If not found: create a new page with all properties and body content
-   d. On success: set `notion_synced = true` in the JSON and write back immediately
+   d. Embed listing photos in the page body using the public URLs from `photo_urls` as Notion external image blocks (NOT local file paths — Notion requires publicly accessible URLs)
+   e. On success: set `notion_synced = true` in the JSON and write back immediately
 7. Save a CSV backup to `data/output/listings-YYYYMMDD-HHMM.csv` (text data only, no screenshots).
 8. Remove stale listings from Notion — any Rental rows whose address is no longer in the current results.
 9. Report: "Synced X listings to Notion. Y new, Z updated, W skipped, R removed. Top 3: [addresses with scores]."

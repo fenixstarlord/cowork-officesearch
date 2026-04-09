@@ -27,7 +27,7 @@ Run the full purchase search pipeline: search for-sale listing sites (under $700
 6. **For each residential sale site** (Zillow, Redfin, Realtor.com):
    a. Navigate to the site's Portland for-sale URL
    b. Apply filters: max price $700,000, target zip codes/neighborhoods (use multiple searches per `portland-geography` Search Radius Guidance)
-   c. Include both houses and multi-family/commercial properties
+   c. Filter to residential homes only (House property type). Exclude commercial, mixed-use, condos, and multi-family.
    d. Wait for results to load
    e. Use `read_page` to extract listing cards from results
    f. For each promising listing (up to 5 per site):
@@ -41,11 +41,7 @@ Run the full purchase search pipeline: search for-sale listing sites (under $700
       - Add to listings array
    g. Navigate back to results or next site
 
-8. **For each commercial sale site** (LoopNet, Craigslist commercial):
-   a. Navigate to the site's Portland for-sale URL
-   b. Apply filters: max price $700,000, search for "mixed use", "live work", "retail", "office"
-   c. Extract listings following the same pattern
-   d. Set `listing_type` to "commercial" or "mixed-use"
+8. **Skip commercial sale sites** (LoopNet, CommercialCafe, Craigslist commercial) — only searching residential homes.
 
 9. **Search additional sources** (ask user for login first):
    - Facebook Marketplace (propertyforsale category)
@@ -59,7 +55,7 @@ Run the full purchase search pipeline: search for-sale listing sites (under $700
     - Report dedup summary
 
 11. Write deduplicated listings to `data/output/purchase-listings.json`
-12. Report summary: "Found X properties across Y sites (Z after dedup). W residential, V commercial/mixed-use."
+12. Report summary: "Found X residential homes across Y sites (Z after dedup)."
 
 #### CAPTCHA Handling
 Same as rental — screenshot, ask user to solve, wait, resume.
@@ -116,7 +112,8 @@ Score all listings and sync them to the Notion database, where each listing beco
    a. Search the database for an existing page matching this address (Name property)
    b. If found: update the existing page's properties and body content
    c. If not found: create a new page with all properties and body content
-   d. On success: set `notion_synced = true` in the JSON and write back immediately
+   d. Embed listing photos in the page body using the public URLs from `photo_urls` as Notion external image blocks (NOT local file paths — Notion requires publicly accessible URLs)
+   e. On success: set `notion_synced = true` in the JSON and write back immediately
 7. Save a CSV backup to `data/output/purchase-listings-YYYYMMDD-HHMM.csv` (text data only, no screenshots).
 8. Remove stale listings from Notion — any Purchase rows whose address is no longer in the current results.
 9. Report: "Synced X properties to Notion. Y new, Z updated, W skipped, R removed. Top 3: [addresses with scores]."
