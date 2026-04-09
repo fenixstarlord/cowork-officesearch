@@ -19,9 +19,6 @@ Claude Code project that searches for live/work spaces in Portland, OR, checks f
 ```
 /rent       # Full rental pipeline: search → check internet → sync to Notion
 /purchase   # Full purchase pipeline: search → check internet → sync to Notion
-/watch      # Monitor for new/changed listings since last search
-/compare    # Side-by-side comparison of 2-3 listings
-/favorites  # Track favorite/rejected/reviewed listings
 ```
 
 Each pipeline command runs all three stages end-to-end. If interrupted, re-running picks up where it left off.
@@ -52,14 +49,14 @@ Central Portland on both sides of the Willamette River:
 Each listing becomes a row in a Notion database with 28 properties:
 
 - **Core**: Address, Price, Score (0-100), Bedrooms, Bathrooms, Sqft, Neighborhood
-- **Classification**: Type (Rental/Purchase), Listing Type, Property Type, Source, Status
+- **Classification**: Type (Rental/Purchase), Listing Type, Property Type, Source
 - **Internet**: Classification (Excellent/Good/Adequate/Poor), Provider details
 - **Scoring**: Hipness score + tier, Safety score + tier
 - **Market**: Price Trend, Days on Market
 - **Links**: Listing URL, Street View, Google Maps, Also Listed On
-- **Details**: Terms, Hipness Notes, Safety Notes, Notes
+- **Details**: Terms, Hipness Notes, Safety Notes
 
-Each listing's **page body** contains: description, amenities, distances to key locations, full internet provider breakdown, and price history.
+Each listing's **page body** contains: description, amenities, driving distances to key locations (via Google Maps Distance Matrix API), full internet provider breakdown, and price history.
 
 Re-running updates existing rows (matched by address) rather than creating duplicates. Use Notion's built-in views to sort, filter, and group listings.
 
@@ -81,9 +78,6 @@ BroadbandNow is the primary ISP checker -- one address lookup returns all provid
   commands/
     rent.md                            # /rent — full rental pipeline
     purchase.md                        # /purchase — full purchase pipeline
-    watch.md                           # /watch
-    compare.md                         # /compare
-    favorites.md                       # /favorites
   skills/
     search-resources/SKILL.md          # Rental site URLs, strategies, JSON schema
     purchase-search-resources/SKILL.md # For-sale site URLs, strategies, purchase JSON schema

@@ -1,6 +1,6 @@
 ---
 name: apartment-finder
-description: "Browses apartment and commercial listing sites using Chrome automation, applies filters for Portland Inner SE, extracts listing data, and captures screenshots."
+description: "Browses apartment and commercial listing sites using Chrome automation, applies filters for central Portland, extracts listing data, and captures screenshots."
 model: sonnet
 tools:
   - mcp__Claude_in_Chrome__navigate

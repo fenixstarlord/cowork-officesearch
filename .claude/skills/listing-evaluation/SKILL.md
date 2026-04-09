@@ -62,9 +62,9 @@ Key locations are configured in `data/config.json` under `key_locations`. Each e
 | **George** | 3816 SW Lee St, Portland, OR 97221 |
 | **Jasmine** | 3521 SE Main St, Portland, OR 97214 |
 
-To add, remove, or change key locations, edit `data/config.json`. The report and distance calculations dynamically read from this config — no code changes needed.
+To add, remove, or change key locations, edit `data/config.json`. Distance calculations dynamically read from this config — no code changes needed.
 
-Distances are calculated as straight-line (or driving if available) and displayed in the report for each listing.
+Distances are calculated as driving distance via the Google Maps Distance Matrix API and displayed in each Notion listing page.
 
 ## Disqualifiers (Auto-Reject)
 

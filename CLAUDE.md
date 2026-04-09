@@ -20,29 +20,21 @@ This project has two main commands, each running a three-stage pipeline end-to-e
 
 Each command runs all three stages sequentially. Stages are re-runnable — if interrupted, re-running picks up where it left off.
 
-### Utility Commands
-- **`/watch`** — Monitor for new or price-changed listings since last search. Diffs current vs previous results.
-- **`/compare`** — Side-by-side comparison of 2-3 selected listings with highlighted trade-offs.
-- **`/favorites`** — Track reviewed/favorited/rejected listings. Integrates with reports and `/watch`.
-
 ## Data Flow
 
 ### Rental Pipeline
-- `data/output/listings.json` — Rental listing objects (with deduplication, price history, lease terms, hipness/safety scores)
+- `data/output/listings.json` — Rental listing objects (with deduplication, price history, lease terms, hipness/safety scores, `notion_synced` flag)
 - `data/output/screenshots/` — Listing photos (`{id}-1.jpg` through `{id}-8.jpg`), floor plans (`{id}-floorplan.jpg`)
-- Notion database — Each listing synced as a row with 28 properties and page body content
+- Notion database — Each listing synced as a row with properties and page body content
 
 ### Purchase Pipeline
-- `data/output/purchase-listings.json` — Purchase listing objects (with deduplication, price history, sale terms, hipness/safety scores)
+- `data/output/purchase-listings.json` — Purchase listing objects (with deduplication, price history, sale terms, hipness/safety scores, `notion_synced` flag)
 - `data/output/screenshots/` — Shared photo directory (same naming convention)
 - Notion database — Same database as rental, distinguished by Type property
 
 ### Shared
 - `data/.env` — Google Maps API key (gitignored)
 - `data/config.json` — Configurable key locations, search defaults, Notion database ID
-- `data/output/reviewed.json` — Favorites/review history (runtime, gitignored)
-- `data/output/search-criteria.json` — Saved search criteria for `/watch` (runtime, gitignored)
-- `data/output/watch-diff-YYYYMMDD-HHMM.json` — Watch diff results (runtime, gitignored)
 
 ## Tool Dependencies
 
@@ -51,7 +43,8 @@ This project uses browser automation — no custom MCP server:
 - **`mcp__Claude_in_Chrome__*`** tools: `navigate`, `find`, `read_page`, `computer` (click, screenshot, scroll, type, wait), `form_input`, `get_page_text`, `javascript_tool`, `tabs_context_mcp`, `tabs_create_mcp`
 - **Google Maps APIs** (Static Maps API, Street View Static API) via API key in `data/.env`
 - **`Bash` + `curl`** for downloading listing photos
-- **Notion connector** tools (`notion-create-pages`, `notion-fetch`) for syncing listings to Notion database
+- **Google Maps Distance Matrix API** for driving distance calculations
+- **Notion connector** tools (`notion-create-pages`, `notion-fetch`) for syncing listings to Notion database — tool names include a session-specific UUID prefix that changes between Cowork sessions
 
 ### Known Limitations
 - **Chrome `save_to_disk` screenshots do not write to disk** -- they exist only in extension memory. Always use `javascript_tool` to extract image URLs from pages, then download via `curl`.
@@ -96,17 +89,11 @@ In addition to the core sites (Zillow, Redfin, Craigslist, etc.), searches inclu
 ### Hipness & Safety Scoring
 Each listing receives a hipness score (cultural vibrancy, indie businesses, walkability, web buzz) and a safety score (crime data, noise levels, online reputation). Both are integrated into the evaluation rubric and stored as Notion database properties. See `hipness-scoring` and `safety-scoring` skills.
 
-### Favorites & History Tracking
-The `/favorites` command tracks reviewed, favorited, and rejected listings in `data/output/reviewed.json`. The Status property in Notion reflects this (New/Reviewed/Favorite/Rejected). Use Notion database views to filter. The `/watch` command respects this history.
-
-### New Listing Alerts
-The `/watch` command re-runs a search with saved criteria, diffs against previous results, and surfaces only new, removed, or price-changed listings.
-
-### Side-by-Side Comparison
-The `/compare` command generates a focused comparison of 2-3 listings with highlighted trade-offs and a pros/cons analysis.
-
 ### Configurable Key Locations
-Distance calculations read from `data/config.json` instead of being hardcoded. Add, remove, or change key locations by editing the config.
+Distance calculations (driving distance via Google Maps Distance Matrix API) read from `data/config.json` instead of being hardcoded. Add, remove, or change key locations by editing the config.
+
+### Error Recovery
+Each stage is re-runnable. Stage 2 skips listings with `internet` data. Stage 3 skips listings with `notion_synced = true`. If interrupted, re-running picks up where it left off.
 
 ### Parallel Internet Checks
 For 6+ listings, internet availability checks use multiple browser tabs to reduce total checking time.
@@ -135,10 +122,6 @@ For 6+ listings, internet availability checks use multiple browser tabs to reduc
 | **Commands** | |
 | `.claude/commands/rent.md` | Full rental pipeline: search, check internet, sync to Notion |
 | `.claude/commands/purchase.md` | Full purchase pipeline: search, check internet, sync to Notion |
-| **Utility Commands** | |
-| `.claude/commands/watch.md` | Monitor for new/changed listings since last search |
-| `.claude/commands/compare.md` | Side-by-side comparison of 2-3 listings |
-| `.claude/commands/favorites.md` | Manage favorites, rejected, and reviewed listings |
 | **Agents** | |
 | `.claude/agents/apartment-finder.md` | Sub-agent: browser-driven listing scraper (rental + purchase) |
 | `.claude/agents/internet-checker.md` | Sub-agent: ISP coverage lookups |
@@ -147,5 +130,3 @@ For 6+ listings, internet availability checks use multiple browser tabs to reduc
 | `data/config.json` | Configurable key locations, search defaults, Notion database ID |
 | `data/output/listings.json` | Rental listings (runtime, gitignored) |
 | `data/output/purchase-listings.json` | Purchase listings (runtime, gitignored) |
-| `data/output/reviewed.json` | Favorites/review tracking (runtime, gitignored) |
-| `data/output/search-criteria.json` | Saved search criteria for /watch (runtime, gitignored) |

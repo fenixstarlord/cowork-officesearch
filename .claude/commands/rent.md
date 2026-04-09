@@ -38,16 +38,7 @@ Confirm the parsed criteria:
 4. Create `data/output/screenshots/` directory if needed
 5. Initialize empty `data/output/listings.json` array
 
-6. **Save search criteria** to `data/output/search-criteria.json` for `/watch` command:
-   ```json
-   {
-     "type": "rental",
-     "saved_at": "2026-03-29T10:00:00",
-     "criteria": { "bedrooms": 2, "min_sqft": 700, "max_price": 2500, "mixed_use": "preferred" }
-   }
-   ```
-
-7. **Translate criteria to site-specific filters:**
+6. **Translate criteria to site-specific filters:**
    - **Craigslist**: URL params (`min_bedrooms`, `max_price`, `min_sqft`, `postal`, `search_distance`)
    - **Zillow/Redfin**: Filter panel controls
    - **Apartments.com/HotPads**: Search bar + filter panel
@@ -145,19 +136,27 @@ Score all listings and sync them to the Notion database, where each listing beco
 
 1. Read `data/output/listings.json`. Validate that listings exist and most have internet data.
 2. Read `data/config.json` for Notion database ID and key locations.
-3. Read `data/output/reviewed.json` if it exists (for Status property).
-4. Load the `listing-evaluation` skill to compute a final score for each listing (includes hipness + safety components).
-5. Score each listing using the rubric (0-100 scale).
-6. For each listing, sync to Notion:
+3. Load the `listing-evaluation` skill to compute a final score for each listing (includes hipness + safety components).
+4. Score each listing using the rubric (0-100 scale).
+5. Filter to listings where `notion_synced` is not `true` (enables resume after interruption).
+6. For each un-synced listing, sync to Notion:
    a. Search the database for an existing page matching this address (Name property)
    b. If found: update the existing page's properties and body content
    c. If not found: create a new page with all properties and body content
-7. Report: "Synced X listings to Notion. Y new, Z updated. Top 3: [addresses with scores]."
+   d. On success: set `notion_synced = true` in the JSON and write back immediately
+7. Save a CSV backup to `data/output/listings-YYYYMMDD-HHMM.csv` (text data only, no screenshots).
+8. Remove stale listings from Notion — any Rental rows whose address is no longer in the current results.
+9. Report: "Synced X listings to Notion. Y new, Z updated, W skipped, R removed. Top 3: [addresses with scores]."
 
-See the `report-builder` agent for the full list of Notion database properties and page body format.
+See the `report-builder` agent for the full Notion database schema, distance calculation, and page body format.
+
+#### Re-Runnability
+Stage 3 only syncs listings where `notion_synced` is not `true`. If interrupted, re-running `/rent` picks up where it left off.
 
 #### Expected Output
 - Notion database rows created/updated (one per listing)
+- CSV backup at `data/output/listings-YYYYMMDD-HHMM.csv`
+- Stale Notion rows removed (listings no longer in results)
 - Chat confirmation with sync counts and top 3 recommendations
 
 #### Delegation

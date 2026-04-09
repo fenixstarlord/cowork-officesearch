@@ -2,6 +2,25 @@
 
 All changes to the Portland Office Search project.
 
+## 2026-04-09 — Simplify commands, fix distances, add error recovery
+
+### Removed
+- Removed `/compare`, `/watch`, `/favorites` utility commands
+- Removed `reviewed.json` and `search-criteria.json` data files
+- Removed Status and Notes properties from Notion schema (were tied to /favorites)
+
+### Distances
+- Replaced straight-line distance approximation with Google Maps Distance Matrix API
+- Distances now show driving distance and duration (e.g., "3.2 mi, 12 mins")
+
+### Error Recovery
+- Added `notion_synced` field to listing JSON — Stage 3 skips already-synced listings
+- If interrupted, re-running picks up where it left off (same pattern as Stage 2 internet checks)
+
+### Notion Tool IDs
+- Removed hardcoded session-specific MCP tool UUIDs from report-builder agent
+- Agent now inherits all tools from parent conversation (discovers Notion tools at runtime)
+
 ## 2026-04-09 — Replace HTML Reports with Notion Database
 
 ### Output
@@ -33,8 +52,8 @@ All changes to the Portland Office Search project.
 - Fixed stale `/apt:search-listings` reference in report-builder agent
 
 ### Command Consolidation
-- Merged 3 rental commands into single `/rent` (search → check internet → generate report)
-- Merged 3 purchase commands into single `/purchase` (search → check internet → generate report)
+- Merged 3 rental commands into single `/rent` (search → check internet → sync to Notion)
+- Merged 3 purchase commands into single `/purchase` (search → check internet → sync to Notion)
 - Removed 6 individual stage commands (`rental-search-listings`, `rental-check-internet`, `rental-generate-report`, `purchase-search-listings`, `purchase-check-internet`, `purchase-generate-report`)
 
 ### Documentation
