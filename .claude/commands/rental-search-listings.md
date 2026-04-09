@@ -4,7 +4,7 @@ argument-hint: ""
 allowed-tools: mcp__Claude_in_Chrome__navigate, mcp__Claude_in_Chrome__find, mcp__Claude_in_Chrome__read_page, mcp__Claude_in_Chrome__computer, mcp__Claude_in_Chrome__form_input, mcp__Claude_in_Chrome__get_page_text, mcp__Claude_in_Chrome__javascript_tool, mcp__Claude_in_Chrome__tabs_context_mcp, mcp__Claude_in_Chrome__tabs_create_mcp
 ---
 
-# /rental:search-listings
+# /rental-search-listings
 
 Search rental listing sites for spaces in Portland matching criteria gathered from the user.
 

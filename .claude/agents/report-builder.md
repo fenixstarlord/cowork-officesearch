@@ -155,7 +155,7 @@ The interactive map is embedded directly in the HTML report (works offline once 
 ### Error Handling
 - **Missing photos**: Note "(photos unavailable)" in the listing card. Photos are building/listing images only — no ISP screenshots.
 - **Missing internet data**: Show "Internet check pending" instead of the summary
-- **Empty listings**: Report "No listings to include. Run /apt:search-listings first."
+- **Empty listings**: Report "No listings to include. Run /rental-search-listings first."
 - **Google Maps API failure**: Omit map/street view images, note in listing card
 - **HTML generation failure**: Report the error and suggest the user check the data files
 - **PDF generation failure**: Report the error and suggest the user check the data files

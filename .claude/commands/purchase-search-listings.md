@@ -4,7 +4,7 @@ argument-hint: "[max_results] [neighborhood]"
 allowed-tools: mcp__Claude_in_Chrome__navigate, mcp__Claude_in_Chrome__find, mcp__Claude_in_Chrome__read_page, mcp__Claude_in_Chrome__computer, mcp__Claude_in_Chrome__form_input, mcp__Claude_in_Chrome__get_page_text, mcp__Claude_in_Chrome__javascript_tool, mcp__Claude_in_Chrome__tabs_context_mcp, mcp__Claude_in_Chrome__tabs_create_mcp
 ---
 
-# /purchase:search-listings
+# /purchase-search-listings
 
 Search residential and commercial listing sites for properties for sale in Portland's target area, under $700k.
 

@@ -3,12 +3,12 @@ description: Generate an HTML report (preferred) or PDF from collected purchase 
 allowed-tools: Read, Write, Glob, Bash
 ---
 
-# /purchase:generate-report
+# /purchase-generate-report
 
 Compile all collected for-sale listing data, photos, and Google Maps images into a formatted HTML report.
 
 ## Prerequisites
-- `data/output/purchase-listings.json` must exist and have internet data (run `/purchase:search-listings` and `/purchase:check-internet` first)
+- `data/output/purchase-listings.json` must exist and have internet data (run `/purchase-search-listings` and `/purchase-check-internet` first)
 
 ## Inputs
 None — reads from `data/output/purchase-listings.json` and `data/output/screenshots/`

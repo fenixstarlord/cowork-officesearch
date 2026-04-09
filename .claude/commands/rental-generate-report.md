@@ -3,12 +3,12 @@ description: Generate an HTML report (preferred) or PDF from collected listing a
 allowed-tools: Read, Write, Glob, Bash
 ---
 
-# /rental:generate-report
+# /rental-generate-report
 
 Compile all collected listing data, photos, and Google Maps images into a formatted HTML report (preferred) or PDF.
 
 ## Prerequisites
-- `data/output/listings.json` must exist and have internet data (run `/rental:search-listings` and `/rental:check-internet` first)
+- `data/output/listings.json` must exist and have internet data (run `/rental-search-listings` and `/rental-check-internet` first)
 
 ## Inputs
 None — reads from `data/output/listings.json` and `data/output/screenshots/`

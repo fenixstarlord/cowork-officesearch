@@ -1,4 +1,4 @@
-# Portland Office Search — Claude Cowork Plugin
+# Portland Office Search — Claude Cowork Project
 
 ## Identity
 
@@ -6,17 +6,17 @@ You are an office space search assistant specializing in Portland, OR. Your goal
 
 ## Workflow Overview
 
-This plugin has two command sets, each operating as a three-stage pipeline:
+This project has two command sets, each operating as a three-stage pipeline:
 
-### Rental Search (`/rental:*`)
-1. **Search Listings** (`/rental:search-listings`) — Browse residential and commercial rental listing sites for spaces matching criteria: 2+ rooms, bathroom, kitchenette. No price cap.
-2. **Check Internet** (`/rental:check-internet`) — For each viable listing, check fiber internet availability at the address.
-3. **Generate Report** (`/rental:generate-report`) — Compile results into an HTML report with listing photos, Google Maps/Street View, stats, internet data, and scores.
+### Rental Search
+1. **Search Listings** (`/rental-search-listings`) — Browse residential and commercial rental listing sites for spaces matching criteria: 2+ rooms, bathroom, kitchenette. No price cap.
+2. **Check Internet** (`/rental-check-internet`) — For each viable listing, check fiber internet availability at the address.
+3. **Generate Report** (`/rental-generate-report`) — Compile results into an HTML report with listing photos, Google Maps/Street View, stats, internet data, and scores.
 
-### Purchase Search (`/purchase:*`)
-1. **Search Listings** (`/purchase:search-listings`) — Browse residential and commercial for-sale listing sites for properties under $700k (houses, buildings, mixed-use, commercial).
-2. **Check Internet** (`/purchase:check-internet`) — For each property, check fiber internet availability at the address.
-3. **Generate Report** (`/purchase:generate-report`) — Compile results into an HTML report with photos, maps, property details, internet data, and scores.
+### Purchase Search
+1. **Search Listings** (`/purchase-search-listings`) — Browse residential and commercial for-sale listing sites for properties under $700k (houses, buildings, mixed-use, commercial).
+2. **Check Internet** (`/purchase-check-internet`) — For each property, check fiber internet availability at the address.
+3. **Generate Report** (`/purchase-generate-report`) — Compile results into an HTML report with photos, maps, property details, internet data, and scores.
 
 Each stage can be run independently. Stage 2 requires Stage 1 output. Stage 3 requires Stage 2 output.
 
@@ -47,7 +47,7 @@ Each stage can be run independently. Stage 2 requires Stage 1 output. Stage 3 re
 
 ## Tool Dependencies
 
-This plugin uses browser automation — no custom MCP server:
+This project uses browser automation — no custom MCP server:
 
 - **`mcp__Claude_in_Chrome__*`** tools: `navigate`, `find`, `read_page`, `computer` (click, screenshot, scroll, type, wait), `form_input`, `get_page_text`, `javascript_tool`, `tabs_context_mcp`, `tabs_create_mcp`
 - **Google Maps APIs** (Static Maps API, Street View Static API) via API key in `data/.env`
@@ -130,33 +130,32 @@ For 6+ listings, internet availability checks use multiple browser tabs to reduc
 
 | File | Purpose |
 |------|---------|
-| `.claude-plugin/plugin.json` | Plugin manifest |
 | **Skills** | |
-| `skills/search-resources/SKILL.md` | Rental listing sites, ISP checkers, strategies, JSON schema |
-| `skills/purchase-search-resources/SKILL.md` | For-sale listing sites, strategies, purchase JSON schema |
-| `skills/portland-geography/SKILL.md` | Central Portland neighborhoods, zips, corridors |
-| `skills/fiber-internet-check/SKILL.md` | ISP coverage lookup procedures (BroadbandNow primary) |
-| `skills/listing-evaluation/SKILL.md` | Rental scoring and filtering criteria |
-| `skills/purchase-evaluation/SKILL.md` | Purchase scoring and filtering criteria ($700k cap) |
-| `skills/hipness-scoring/SKILL.md` | Area hipness/vibrancy scoring (baseline + live data + web buzz) |
-| `skills/safety-scoring/SKILL.md` | Neighborhood safety and noise scoring (crime data + web search) |
-| `skills/deduplication/SKILL.md` | Cross-site listing deduplication (address normalization + merge) |
+| `.claude/skills/search-resources/SKILL.md` | Rental listing sites, ISP checkers, strategies, JSON schema |
+| `.claude/skills/purchase-search-resources/SKILL.md` | For-sale listing sites, strategies, purchase JSON schema |
+| `.claude/skills/portland-geography/SKILL.md` | Central Portland neighborhoods, zips, corridors |
+| `.claude/skills/fiber-internet-check/SKILL.md` | ISP coverage lookup procedures (BroadbandNow primary) |
+| `.claude/skills/listing-evaluation/SKILL.md` | Rental scoring and filtering criteria |
+| `.claude/skills/purchase-evaluation/SKILL.md` | Purchase scoring and filtering criteria ($700k cap) |
+| `.claude/skills/hipness-scoring/SKILL.md` | Area hipness/vibrancy scoring (baseline + live data + web buzz) |
+| `.claude/skills/safety-scoring/SKILL.md` | Neighborhood safety and noise scoring (crime data + web search) |
+| `.claude/skills/deduplication/SKILL.md` | Cross-site listing deduplication (address normalization + merge) |
 | **Rental Commands** | |
-| `commands/rental-search-listings.md` | Stage 1: search rental listing sites |
-| `commands/rental-check-internet.md` | Stage 2: check fiber availability for rentals |
-| `commands/rental-generate-report.md` | Stage 3: generate rental HTML report |
+| `.claude/commands/rental-search-listings.md` | Stage 1: search rental listing sites |
+| `.claude/commands/rental-check-internet.md` | Stage 2: check fiber availability for rentals |
+| `.claude/commands/rental-generate-report.md` | Stage 3: generate rental HTML report |
 | **Purchase Commands** | |
-| `commands/purchase-search-listings.md` | Stage 1: search for-sale listing sites (under $700k) |
-| `commands/purchase-check-internet.md` | Stage 2: check fiber availability for purchases |
-| `commands/purchase-generate-report.md` | Stage 3: generate purchase HTML report |
+| `.claude/commands/purchase-search-listings.md` | Stage 1: search for-sale listing sites (under $700k) |
+| `.claude/commands/purchase-check-internet.md` | Stage 2: check fiber availability for purchases |
+| `.claude/commands/purchase-generate-report.md` | Stage 3: generate purchase HTML report |
 | **Utility Commands** | |
-| `commands/watch.md` | Monitor for new/changed listings since last search |
-| `commands/compare.md` | Side-by-side comparison of 2-3 listings |
-| `commands/favorites.md` | Manage favorites, rejected, and reviewed listings |
+| `.claude/commands/watch.md` | Monitor for new/changed listings since last search |
+| `.claude/commands/compare.md` | Side-by-side comparison of 2-3 listings |
+| `.claude/commands/favorites.md` | Manage favorites, rejected, and reviewed listings |
 | **Agents** | |
-| `agents/apartment-finder.md` | Sub-agent: browser-driven listing scraper (rental + purchase) |
-| `agents/internet-checker.md` | Sub-agent: ISP coverage lookups |
-| `agents/report-builder.md` | Sub-agent: HTML/PDF report compilation |
+| `.claude/agents/apartment-finder.md` | Sub-agent: browser-driven listing scraper (rental + purchase) |
+| `.claude/agents/internet-checker.md` | Sub-agent: ISP coverage lookups |
+| `.claude/agents/report-builder.md` | Sub-agent: HTML/PDF report compilation |
 | **Data** | |
 | `data/config.json` | Configurable key locations, search defaults, report settings |
 | `data/output/listings.json` | Rental listings (runtime, gitignored) |

@@ -1,6 +1,25 @@
 # Changelog
 
-All changes to the Portland Office Search plugin. Dates reflect the single-day development sprint.
+All changes to the Portland Office Search project.
+
+## 2026-04-09 — Convert to Standalone Cowork Project
+
+### Structure
+- Converted from Claude plugin format to standalone Cowork project format
+- Moved `commands/` → `.claude/commands/`
+- Moved `skills/` → `.claude/skills/`
+- Moved `agents/` → `.claude/agents/`
+- Removed `.claude-plugin/plugin.json` (no longer needed)
+- Removed `package.sh` (no longer needed for distribution)
+
+### Command Naming
+- Commands no longer namespaced: `/rental:search-listings` → `/rental-search-listings`, etc.
+- Updated all internal cross-references to match
+- Fixed stale `/apt:search-listings` reference in report-builder agent
+
+### Documentation
+- Updated CLAUDE.md and README.md for standalone project format
+- Replaced "plugin" terminology with "project" throughout
 
 ## 2026-03-27 — Project Rename and Purchase Mode
 
