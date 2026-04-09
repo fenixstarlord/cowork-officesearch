@@ -134,6 +134,23 @@ Write the page body as markdown with these sections:
 
 When building page body blocks for the Notion API, embed listing photos using their **public URLs** from `photo_urls`. Do NOT use local file paths from `photo_paths` — the Notion API requires publicly accessible URLs.
 
+#### Page Cover Image
+
+When creating or updating a Notion page, if `photo_urls` is non-empty, set the **first photo URL** as the page cover:
+```json
+{
+  "cover": {
+    "type": "external",
+    "external": {
+      "url": "https://images.craigslist.org/abc_600x450.jpg"
+    }
+  }
+}
+```
+This makes the listing photo visible in database gallery/board views. If `photo_urls` is empty or missing, do not set a cover.
+
+#### Page Body Image Blocks
+
 For each URL in `photo_urls`, add a Notion image block with external URL type:
 ```json
 {
