@@ -112,7 +112,7 @@ Spawns the `internet-checker` agent for the browser automation work.
 
 ---
 
-## Stage 3: Generate Report
+## Stage 3: Sync to Notion
 
 Score all listings and sync them to the Notion database, where each listing becomes a row with properties and page content.
 

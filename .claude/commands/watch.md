@@ -108,13 +108,13 @@ New listings:
 
 Would you like me to:
   a) Run internet checks on the new listings?
-  b) Generate an updated report?
+  b) Sync the updated listings to Notion?
   c) Add these to your favorites for review?
 ```
 
 ### 6. Mark New Listings
 
-New listings are flagged with `"is_new": true` in the listings JSON so the report can display a "NEW" badge.
+New listings are flagged with `"is_new": true` in the listings JSON so they get Status = "New" when synced to Notion.
 
 ## Search Criteria Persistence
 

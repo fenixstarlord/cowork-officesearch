@@ -1,12 +1,12 @@
 ---
 description: Generate a side-by-side comparison of 2-3 selected listings
 argument-hint: "[listing-id-1] [listing-id-2] [listing-id-3]"
-allowed-tools: Read, Write, Bash, Glob
+allowed-tools: Read, Bash
 ---
 
 # /compare
 
-Create a focused side-by-side comparison of 2-3 listings from the current dataset.
+Create a focused side-by-side comparison of 2-3 listings from the current dataset, displayed in chat.
 
 ## Inputs
 - 2 or 3 listing IDs (e.g., `zillow-12345 craigslist-67890 redfin-11111`)
@@ -23,15 +23,12 @@ Create a focused side-by-side comparison of 2-3 listings from the current datase
 2. If an ID isn't found, report the error and list available IDs
 3. Load 2-3 matching listing objects
 
-### 2. Generate Comparison HTML
+### 2. Display Comparison
 
-Create a self-contained HTML file at `data/output/comparison-YYYYMMDD-HHMM.html` with:
+Present a markdown comparison table in chat:
 
-**Layout**: Side-by-side columns (2 or 3 columns depending on input)
-
-**Header Row**: Listing photo (first photo from each) + address
-
-**Comparison Table** (rows for each attribute):
+```
+## Comparison: [Address A] vs [Address B] vs [Address C]
 
 | Attribute | Listing A | Listing B | Listing C |
 |-----------|-----------|-----------|-----------|
@@ -46,43 +43,35 @@ Create a self-contained HTML file at `data/output/comparison-YYYYMMDD-HHMM.html`
 | **Listing Type** | Residential | Mixed-use | Residential |
 | **Internet** | Excellent (Fiber 8Gbps) | Good (Cable 2Gbps) | Excellent (Fiber 940Mbps) |
 | **Overall Score** | 82 | 75 | 78 |
-| **Hipness Score** | 90 | 72 | 85 |
-| **Safety Score** | 68 | 74 | 71 |
-| **Walk Score** | 92 | 85 | 88 |
+| **Hipness** | 90 (Very Hip) | 72 (Very Hip) | 85 (Cultural Epicenter) |
+| **Safety** | 68 (Safe) | 74 (Safe) | 71 (Safe) |
 | **Distance to Chris** | 3.2 mi | 4.1 mi | 2.8 mi |
 | **Distance to George** | 5.1 mi | 4.8 mi | 5.3 mi |
 | **Distance to Jasmine** | 0.8 mi | 1.2 mi | 0.5 mi |
+```
 
-*For purchase listings, also include: lot sqft, year built, property type, HOA fees, property tax*
+For purchase listings, also include: lot sqft, year built, property type, HOA fees, property tax.
 
-**Highlight differences**: Cells where one listing clearly wins are highlighted green; worst values are highlighted light red. This makes it easy to see trade-offs at a glance.
+Mark the **best value** in each row with a note (e.g., "← best").
 
-**Photo Row**: First 2 photos from each listing side by side
+### 3. Pros & Cons
 
-**Map Row**: Google Maps static image for each listing, or a single interactive map with all 2-3 pins
-
-**Pros & Cons Section** (per listing):
-Generate a brief pros/cons list based on the data:
-- Pros: highest-scoring attributes, unique amenities, best scores
-- Cons: lowest-scoring attributes, missing features, concerns
-
-**Links**: Direct links to each original listing
-
-### 3. Styling
-
-Use **Pico CSS v2** for base styling, with custom CSS for:
-- Side-by-side column layout (flexbox/grid)
-- Highlighted cells (green for best, red for worst per row)
-- Responsive design (stacks vertically on mobile)
-
-### 4. Report to User
+After the table, provide a brief pros/cons analysis for each listing:
 
 ```
-Comparison generated: data/output/comparison-20260329-1430.html
+### Listing A — 1234 SE Hawthorne Blvd
+**Pros**: Best internet (Fiber 8Gbps), highest overall score, on a main street
+**Cons**: Highest price, smallest sqft, moderate safety score
 
-Summary:
-  Best price: Listing C ($1,600/mo)
-  Best space: Listing B (1,100 sqft, 3bd)
-  Best location: Listing C (closest to Jasmine, highest hipness)
-  Best internet: Listing A (Fiber 8Gbps)
+### Listing B — 5678 SE Division St
+**Pros**: Most space (1,100 sqft, 3bd), mixed-use zoning, best safety
+**Cons**: No fiber, lowest overall score, kitchenette only
+
+### Listing C — 910 SE Belmont St
+**Pros**: Lowest price, closest to Jasmine, highest hipness
+**Cons**: Smallest unit, furthest from George
 ```
+
+### 4. Links
+
+Include Notion database links and original listing URLs for each listing.

@@ -33,8 +33,8 @@ All changes to the Portland Office Search project.
 - Fixed stale `/apt:search-listings` reference in report-builder agent
 
 ### Command Consolidation
-- Merged 3 rental commands into single `/rent` (search → check internet → generate report)
-- Merged 3 purchase commands into single `/purchase` (search → check internet → generate report)
+- Merged 3 rental commands into single `/rent` (search → check internet → sync to Notion)
+- Merged 3 purchase commands into single `/purchase` (search → check internet → sync to Notion)
 - Removed 6 individual stage commands (`rental-search-listings`, `rental-check-internet`, `rental-generate-report`, `purchase-search-listings`, `purchase-check-internet`, `purchase-generate-report`)
 
 ### Documentation
