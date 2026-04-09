@@ -105,17 +105,17 @@ Tracked Listings (5 total):
 2. Confirm with user before clearing: "Clear all tracked listings? (y/n)"
 3. Write back
 
-## Report Integration
+## Notion Integration
 
-When generating reports (`/rent` or `/purchase`):
+When syncing listings to Notion (`/rent` or `/purchase`):
 
 1. Read `reviewed.json` if it exists
-2. For each listing in the report:
-   - If `favorite`: Show a ⭐ badge next to the listing name
-   - If `rejected`: Either hide from report or show with a ~~strikethrough~~ style and gray background
-   - If `reviewed`: Show a ✓ badge
-   - If not in `reviewed.json` and `is_new` is true: Show a "NEW" badge
-3. Add a "Favorites Summary" section at the top of the report listing all favorited listings
+2. For each listing synced to Notion, set the **Status** property:
+   - If `favorite`: Status = "Favorite"
+   - If `rejected`: Status = "Rejected"
+   - If `reviewed`: Status = "Reviewed"
+   - If not in `reviewed.json`: Status = "New"
+3. Use Notion's built-in database views to filter by Status (e.g., a "Favorites" view filtered to Status = "Favorite")
 
 ## Watch Integration
 

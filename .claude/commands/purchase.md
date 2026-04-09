@@ -1,12 +1,12 @@
 ---
-description: End-to-end purchase search — search for-sale listing sites (under $700k), check fiber internet, and generate an HTML report
+description: End-to-end purchase search — search for-sale listing sites (under $700k), check fiber internet, and sync results to Notion
 argument-hint: "[max_results] [neighborhood]"
-allowed-tools: mcp__Claude_in_Chrome__navigate, mcp__Claude_in_Chrome__find, mcp__Claude_in_Chrome__read_page, mcp__Claude_in_Chrome__computer, mcp__Claude_in_Chrome__form_input, mcp__Claude_in_Chrome__get_page_text, mcp__Claude_in_Chrome__javascript_tool, mcp__Claude_in_Chrome__tabs_context_mcp, mcp__Claude_in_Chrome__tabs_create_mcp, Read, Write, Glob, Bash
+allowed-tools: mcp__Claude_in_Chrome__navigate, mcp__Claude_in_Chrome__find, mcp__Claude_in_Chrome__read_page, mcp__Claude_in_Chrome__computer, mcp__Claude_in_Chrome__form_input, mcp__Claude_in_Chrome__get_page_text, mcp__Claude_in_Chrome__javascript_tool, mcp__Claude_in_Chrome__tabs_context_mcp, mcp__Claude_in_Chrome__tabs_create_mcp, Read, Bash
 ---
 
 # /purchase
 
-Run the full purchase search pipeline: search for-sale listing sites (under $700k), check fiber internet at each address, and generate an HTML report.
+Run the full purchase search pipeline: search for-sale listing sites (under $700k), check fiber internet at each address, and sync results to a Notion database.
 
 ---
 
@@ -114,77 +114,24 @@ Spawns the `internet-checker` agent for the browser automation work.
 
 ## Stage 3: Generate Report
 
-Compile all collected for-sale listing data, photos, and Google Maps images into a formatted HTML report.
+Score all listings and sync them to the Notion database, where each listing becomes a row with properties and page content.
 
 1. Read `data/output/purchase-listings.json`. Validate that listings exist and most have internet data.
-2. Read `data/config.json` for key locations and report settings
-3. Read `data/output/reviewed.json` if it exists (for favorites/review badges)
-4. Load the `purchase-evaluation` skill to compute a final score for each listing (includes hipness + safety components)
-5. Score each listing using the purchase rubric (0-100 scale)
-6. Sort listings by score (highest first)
+2. Read `data/config.json` for Notion database ID and key locations.
+3. Read `data/output/reviewed.json` if it exists (for Status property).
+4. Load the `purchase-evaluation` skill to compute a final score for each listing (includes hipness + safety components).
+5. Score each listing using the purchase rubric (0-100 scale).
+6. For each listing, sync to Notion:
+   a. Search the database for an existing page matching this address (Name property)
+   b. If found: update the existing page's properties and body content
+   c. If not found: create a new page with all properties and body content
+7. Report: "Synced X properties to Notion. Y new, Z updated. Top 3: [addresses with scores]."
 
-7. **Fetch Google Maps images** for each listing (requires API key from `data/.env`):
-   - Static Maps API and Street View Static API
-   - Download via `curl` to `data/output/screenshots/{id}-map.jpg` and `{id}-streetview.jpg`
-
-8. **Build HTML report** (primary format):
-
-   **Cover Section:**
-   - Gradient header: "Portland Property Purchase — Live/Work Space Report"
-   - Date generated
-   - Search parameters: Central Portland, under $700k, residential + commercial
-   - Total listings found, fiber-available count, deduplication summary
-
-   **Favorites Summary** (if `reviewed.json` has favorites):
-   - Quick list of favorited properties with links to detail cards
-   - Price changes on favorites highlighted
-
-   **Interactive Map** (Leaflet.js — see `report-builder` agent for implementation):
-   - OpenStreetMap tiles, centered on Portland
-   - Color-coded pins for each property (green 80+, yellow 60-79, orange 40-59, red below 40)
-   - Popup on click: address, price, property type, score, hipness/safety tiers
-   - Key locations from `data/config.json` as blue markers
-
-   **Summary Rankings Table** (below map):
-   - All listings ranked by score
-   - Columns: Rank, Badges (⭐/✓/NEW), Address, Neighborhood, Price, Type, Beds/Bath, Sqft, Internet, Hipness, Safety, Score
-   - Color-coded badges for internet/hipness/safety
-   - Rejected listings hidden by default (toggleable)
-
-   **Per-Listing Cards** (sorted by score):
-   - Address + price + property type + status badges (⭐/✓/NEW)
-   - Links to original listing + `also_listed_on` cross-listing links
-   - Photo gallery: up to 8 photos (responsive grid) + floor plan if available
-   - Street View + Google Maps (static images, clickable)
-   - All images with lightbox overlay
-   - Property details: price, beds, baths, sqft, lot size, year built, property type
-   - **Price Context**: Days on market, price trend, price history timeline, previous sales, estimated value
-   - **Sale Terms**: HOA fees, property tax, zoning, assessments (if extracted)
-   - Description and features
-   - Internet summary with classification
-   - **Hipness**: Score badge + tier + buzz highlights
-   - **Safety**: Score badge + tier + safety notes + noise sources
-   - **Distances**: To each key location from `data/config.json`
-
-   **Methodology Section:**
-   - Data sources, scoring rubric (including hipness + safety), internet classification, deduplication approach
-
-   **Filename**: `data/output/portland-purchase-report-YYYYMMDD-HHMM.html`
-
-9. Tell user: "Report generated with X properties."
-
-10. **Ask about Notion**: After the report is generated, ask the user:
-    > "Would you like me to create this report as a Notion document in the Document Hub?"
-
-    If yes, create a page in the Document Hub database (data source `collection://1df03407-763c-8098-81b8-000b500508b8`) using the `notion-create-pages` tool:
-    - **Doc name**: "Portland Properties For Sale Report — {Month} {Year}"
-    - **Category**: `["Planning"]`
-    - **Content**: Convert the report into Notion-flavored Markdown — summary rankings table, per-listing details (address, price, beds/baths, sqft, lot size, property type, neighborhood, internet classification, score), and methodology section
+See the `report-builder` agent for the full list of Notion database properties and page body format.
 
 #### Expected Output
-- `data/output/portland-purchase-report-YYYYMMDD-HHMM.html` (timestamped)
-- Notion document in Document Hub (if user accepts)
-- Chat confirmation with listing count and top 3 recommendations
+- Notion database rows created/updated (one per listing)
+- Chat confirmation with sync counts and top 3 recommendations
 
 #### Delegation
-Spawns the `report-builder` agent for HTML assembly.
+Spawns the `report-builder` agent for Notion sync.

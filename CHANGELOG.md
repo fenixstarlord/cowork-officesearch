@@ -2,6 +2,21 @@
 
 All changes to the Portland Office Search project.
 
+## 2026-04-09 — Replace HTML Reports with Notion Database
+
+### Output
+- Replaced HTML/PDF report generation with Notion database sync
+- Each listing becomes a row with 28 properties (score, price, internet, hipness, safety, etc.)
+- Page body contains description, amenities, distances, internet provider breakdown, price history
+- Re-running updates existing rows (matched by address) instead of creating duplicates
+- Notion database ID configurable in `data/config.json`
+
+### Removed
+- HTML report generation (Pico CSS, Leaflet.js interactive map, photo galleries, lightbox)
+- PDF report generation (`anthropic-skills:pdf`)
+- Python report generators (`generate_report.py`, `generate_html_report.py`)
+- Notion Document Hub integration (replaced by direct database sync)
+
 ## 2026-04-09 — Convert to Standalone Cowork Project
 
 ### Structure

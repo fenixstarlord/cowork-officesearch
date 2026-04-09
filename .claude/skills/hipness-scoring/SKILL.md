@@ -207,9 +207,9 @@ Add the following fields to each listing object (rental or purchase):
 
 Steps 2, 3, and 4 can run in parallel. Step 5 depends on step 4. Steps 6-7 depend on all prior steps.
 
-## Report Display
+## Notion Display
 
-In the HTML report, display the hipness score as:
-- A colored badge next to the listing score (green for 70+, yellow for 40-69, gray for below 40)
-- A expandable section showing the breakdown and buzz highlights
-- Notable "hip finds" (new openings, events, Reddit praise) as bullet points
+In the Notion database, hipness data is stored as:
+- **Hipness** property: numeric score (0-100)
+- **Hipness Tier** property: select value (Cultural Epicenter, Very Hip, Hip-Adjacent, Neutral, Low)
+- **Hipness Notes** property: buzz summary and notable highlights (new openings, events, Reddit praise)
